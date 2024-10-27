@@ -38,13 +38,17 @@ ownerLabel.Parent = frame
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
 amountDisplay.Size = UDim2.new(0.7, 0, 0.6, 0) -- Adjusted size
-amountDisplay.Position = UDim2.new(0.15, 0, 0.3, 0) -- Position below the owner label
+amountDisplay.Position = UDim2.new(0.15, 0, 0.4, 0) -- Position below the owner label
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
+
+-- Increase text size manually for clarity
+amountDisplay.TextSize = 30 -- Adjust this value for the desired size
+ownerLabel.TextSize = 30 -- Adjust this value for the desired size
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
