@@ -46,7 +46,7 @@ amountDisplay.TextScaled = false
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
-amountDisplay.TextSize = 70 -- Increased text size
+amountDisplay.TextSize = 110 -- Increased text size
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
