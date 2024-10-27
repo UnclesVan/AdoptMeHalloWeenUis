@@ -29,7 +29,7 @@ ownerLabel.Size = UDim2.new(1, 0, 0.3, 0)
 ownerLabel.Position = UDim2.new(0, 0, 0, 0)
 ownerLabel.BackgroundTransparency = 1
 ownerLabel.TextColor3 = Color3.new(0, 0, 0)
-ownerLabel.TextScaled = false
+ownerLabel.TextScaled = true
 ownerLabel.Font = Enum.Font.SourceSansBold
 ownerLabel.TextStrokeTransparency = 0.5
 ownerLabel.Text = "Private Script Owner: made by me"
@@ -46,7 +46,7 @@ amountDisplay.TextScaled = false
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
-amountDisplay.TextSize = 70 -- Increased text size for amount display
+amountDisplay.TextSize = 50 -- Increased text size for amount display
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
@@ -62,7 +62,7 @@ closeButton.Size = UDim2.new(0.1, 0, 1, 0)
 closeButton.Position = UDim2.new(0.9, 0, 0, 0)
 closeButton.BackgroundTransparency = 1
 closeButton.TextColor3 = Color3.new(1, 0, 0)
-closeButton.TextScaled = false
+closeButton.TextScaled = true
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.Text = "X"
 closeButton.TextSize = 30 -- Normal text size for close button
