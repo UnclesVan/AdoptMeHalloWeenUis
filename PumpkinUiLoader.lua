@@ -46,7 +46,7 @@ amountDisplay.TextScaled = false
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
-amountDisplay.TextSize = 110 -- Increased text size
+amountDisplay.TextSize = 200 -- Increased text size
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
@@ -65,7 +65,7 @@ closeButton.TextColor3 = Color3.new(1, 0, 0)
 closeButton.TextScaled = false
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.Text = "X"
-closeButton.TextSize = 30 -- Normal text size
+closeButton.TextSize = 100 -- Normal text size
 
 -- Function to pop out the UI
 local function popOutUI()
