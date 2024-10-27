@@ -12,23 +12,35 @@ currencyUI.Parent = playerGui
 
 -- Create the Frame for the currency display
 local frame = Instance.new("Frame", currencyUI)
-frame.Size = UDim2.new(0.3, 0, 0.1, 0) -- Adjust size as needed
-frame.Position = UDim2.new(0.5, -0.15, 0.05, 0) -- Centered at the top
-frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White background
+frame.Size = UDim2.new(0.3, 0, 0.1, 0)
+frame.Position = UDim2.new(0.5, -0.15, 0.05, 0)
+frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 frame.BackgroundTransparency = 0.2
 frame.BorderSizePixel = 0
 
 -- Add rounded corners to the frame
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0.1, 0) -- Rounded corners
+corner.CornerRadius = UDim.new(0.1, 0)
 corner.Parent = frame
+
+-- Create TextLabel for script owner
+local ownerLabel = Instance.new("TextLabel")
+ownerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width, height for the owner label
+ownerLabel.Position = UDim2.new(0, 0, 0, 0) -- Position at the top
+ownerLabel.BackgroundTransparency = 1
+ownerLabel.TextColor3 = Color3.new(0, 0, 0)
+ownerLabel.TextScaled = true
+ownerLabel.Font = Enum.Font.SourceSansBold
+ownerLabel.TextStrokeTransparency = 0.5
+ownerLabel.Text = "Private Script Owner: made by me"
+ownerLabel.Parent = frame
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.8, 0, 1, 0) -- Full size except for close button
-amountDisplay.Position = UDim2.new(0.2, 0, 0, 0) -- Position next to the pumpkin
+amountDisplay.Size = UDim2.new(0.7, 0, 0.6, 0) -- Adjusted size
+amountDisplay.Position = UDim2.new(0.15, 0, 0.3, 0) -- Position below the owner label
 amountDisplay.BackgroundTransparency = 1
-amountDisplay.TextColor3 = Color3.new(0, 0, 0) -- Black text for readability
+amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
@@ -36,7 +48,7 @@ amountDisplay.Text = originalAmountLabel.Text -- Initialize text
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
-pumpkin.Size = UDim2.new(0.2, 0, 1, 0) -- Size of the pumpkin
+pumpkin.Size = UDim2.new(0.25, 0, 1, 0) -- Size of the pumpkin
 pumpkin.Position = UDim2.new(0, 0, 0, 0) -- Position to the left
 pumpkin.BackgroundTransparency = 1
 pumpkin.Image = "rbxassetid://125606063774512" -- Purple pumpkin image ID
@@ -44,25 +56,24 @@ pumpkin.ScaleType = Enum.ScaleType.Fit
 
 -- Create the close button (X)
 local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0.1, 0, 1, 0) -- Size of the close button
-closeButton.Position = UDim2.new(0.9, 0, 0, 0) -- Position at the right side
+closeButton.Size = UDim2.new(0.1, 0, 1, 0)
+closeButton.Position = UDim2.new(0.9, 0, 0, 0)
 closeButton.BackgroundTransparency = 1
-closeButton.TextColor3 = Color3.new(1, 0, 0) -- Red color for X
+closeButton.TextColor3 = Color3.new(1, 0, 0)
 closeButton.TextScaled = true
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.Text = "X"
 
 -- Function to pop out the UI
 local function popOutUI()
-    frame.Position = UDim2.new(0.5, -0.15, 0.1, 0) -- Start position slightly lower
-    frame.Size = UDim2.new(0, 0, 0, 0) -- Start size
+    frame.Position = UDim2.new(0.5, -0.15, 0.1, 0)
+    frame.Size = UDim2.new(0, 0, 0, 0)
     frame.Visible = true
 
-    -- Tween to pop out
     local tweenService = game:GetService("TweenService")
     local popTween = tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -0.15, 0.05, 0), -- Target position
-        Size = UDim2.new(0.3, 0, 0.1, 0) -- Target size
+        Position = UDim2.new(0.5, -0.15, 0.05, 0),
+        Size = UDim2.new(0.3, 0, 0.1, 0)
     })
 
     popTween:Play()
