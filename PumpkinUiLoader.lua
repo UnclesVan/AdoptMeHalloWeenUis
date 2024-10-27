@@ -48,10 +48,6 @@ amountDisplay.Text = originalAmountLabel.Text -- Initialize text
 amountDisplay.TextSize = 80 -- Increased text size for amount display
 amountDisplay.TextScaled = false -- Disable scaling to ensure TextSize is used
 
--- Set the size of the TextLabel explicitly
-amountDisplay.Size = UDim2.new(1, 0, 0.6, 0) -- Full width for better visibility
-amountDisplay.TextScaled = false -- Ensure this is false
-
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
 pumpkin.Size = UDim2.new(0.25, 0, 1, 0)
