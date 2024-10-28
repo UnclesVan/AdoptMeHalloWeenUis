@@ -67,6 +67,15 @@ closeButton.TextScaled = true
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.Text = "X"
 
+-- Hover effect for close button
+closeButton.MouseEnter:Connect(function()
+    closeButton.TextColor3 = Color3.new(1, 0.5, 0.5) -- Change color on hover
+end)
+
+closeButton.MouseLeave:Connect(function()
+    closeButton.TextColor3 = Color3.new(1, 0, 0) -- Original color
+end)
+
 -- Function to create the sinking effect
 local function sinkCloseButton()
     local tweenService = game:GetService("TweenService")
@@ -81,7 +90,8 @@ closeButton.MouseButton1Click:Connect(function()
     wait(0.2)  -- Wait before closing
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 0, 0, 0)
+        Size = UDim2.new(0, 0, 0, 0),
+        BackgroundTransparency = 1
     })
     closeTween:Play()
     closeTween.Completed:Wait()
@@ -129,3 +139,18 @@ frame.InputBegan:Connect(function(input)
 end)
 
 userInputService.InputChanged:Connect(updateInput)
+
+-- Hover effects for frame
+frame.MouseEnter:Connect(function()
+    local tweenService = game:GetService("TweenService")
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0.32, 0, 0.17, 0)
+    }):Play()
+end)
+
+frame.MouseLeave:Connect(function()
+    local tweenService = game:GetService("TweenService")
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0.3, 0, 0.15, 0)
+    }):Play()
+end)
