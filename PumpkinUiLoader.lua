@@ -1,3 +1,19 @@
+-- Create TextLabel for amount
+local amountDisplay = Instance.new("TextLabel", frame)
+amountDisplay.Size = UDim2.new(0.8, 0, 0.5, 0)  -- Adjusted size
+amountDisplay.Position = UDim2.new(0.1, 0, 0.5, 0)
+amountDisplay.BackgroundTransparency = 1
+amountDisplay.TextColor3 = Color3.new(0, 0, 0)
+amountDisplay.Font = Enum.Font.SourceSansBold
+amountDisplay.TextStrokeTransparency = 0.5
+amountDisplay.Text = originalAmountLabel.Text -- Initialize text
+amountDisplay.TextSize = 50 -- Increased text size for amount display
+amountDisplay.TextScaled = false -- Disable scaling to ensure TextSize is used
+Complete Code Snippet
+Here’s how that fits into the complete UI script:
+
+lua
+Copy code
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -45,8 +61,8 @@ amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
-amountDisplay.TextSize = 40 -- Increased text size for amount display
-amountDisplay.TextScaled = false -- Keep scaling disabled
+amountDisplay.TextSize = 50 -- Increased text size for amount display
+amountDisplay.TextScaled = false -- Disable scaling to ensure TextSize is used
 
 -- Create the purple pumpkin image
 local pumpkin = Instance.new("ImageLabel", frame)
