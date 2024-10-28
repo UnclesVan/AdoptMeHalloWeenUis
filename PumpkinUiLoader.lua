@@ -12,8 +12,8 @@ currencyUI.Parent = playerGui
 
 -- Create the Frame for the currency display
 local frame = Instance.new("Frame", currencyUI)
-frame.Size = UDim2.new(0.2, 0, 0.06, 0)  -- Size of the frame
-frame.Position = UDim2.new(0.5, -0.1, 0.05, 0)
+frame.Size = UDim2.new(0.15, 0, 0.04, 0)  -- Smaller size
+frame.Position = UDim2.new(0.5, -0.075, 0.05, 0)  -- Centered
 frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 frame.BackgroundTransparency = 0.2
 frame.BorderSizePixel = 0
@@ -33,7 +33,7 @@ ownerLabel.TextScaled = true
 ownerLabel.Font = Enum.Font.SourceSansBold
 ownerLabel.TextStrokeTransparency = 0.5
 ownerLabel.Text = "Private Script Owner: made by me"
-ownerLabel.TextSize = 12 -- Reduced text size for owner label
+ownerLabel.TextSize = 10 -- Reduced text size for owner label
 ownerLabel.Parent = frame
 
 -- Create TextLabel for amount
@@ -45,7 +45,7 @@ amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
 amountDisplay.Text = originalAmountLabel.Text -- Initialize text
-amountDisplay.TextSize = 30 -- Increased text size for amount display
+amountDisplay.TextSize = 40 -- Increased text size for amount display
 amountDisplay.TextScaled = false -- Keep scaling disabled
 
 -- Create the purple pumpkin image
@@ -65,18 +65,18 @@ closeButton.TextColor3 = Color3.new(1, 0, 0)
 closeButton.TextScaled = true
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.Text = "X"
-closeButton.TextSize = 12 -- Reduced text size for close button
+closeButton.TextSize = 10 -- Reduced text size for close button
 
 -- Function to pop out the UI
 local function popOutUI()
-    frame.Position = UDim2.new(0.5, -0.1, 0.1, 0)
+    frame.Position = UDim2.new(0.5, -0.075, 0.1, 0)
     frame.Size = UDim2.new(0, 0, 0, 0)
     frame.Visible = true
 
     local tweenService = game:GetService("TweenService")
     local popTween = tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -0.1, 0.05, 0),
-        Size = UDim2.new(0.2, 0, 0.06, 0)  -- Adjusted size during animation
+        Position = UDim2.new(0.5, -0.075, 0.05, 0),
+        Size = UDim2.new(0.15, 0, 0.04, 0)  -- Adjusted size during animation
     })
 
     popTween:Play()
@@ -101,7 +101,7 @@ popOutUI()
 frame.MouseEnter:Connect(function()
     local tweenService = game:GetService("TweenService")
     local hoverTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0.22, 0, 0.07, 0)  -- Slightly larger during hover
+        Size = UDim2.new(0.16, 0, 0.045, 0)  -- Slightly larger during hover
     })
     hoverTween:Play()
 end)
@@ -109,7 +109,7 @@ end)
 frame.MouseLeave:Connect(function()
     local tweenService = game:GetService("TweenService")
     local shrinkTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0.2, 0, 0.06, 0)  -- Return to normal size
+        Size = UDim2.new(0.15, 0, 0.04, 0)  -- Return to normal size
     })
     shrinkTween:Play()
 end)
