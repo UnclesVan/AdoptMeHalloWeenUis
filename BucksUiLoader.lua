@@ -35,6 +35,14 @@ ownerLabel.TextStrokeTransparency = 0.5
 ownerLabel.Text = "Private Script Owner: made by me"
 ownerLabel.Parent = frame
 
+-- Create the new image
+local candyCorn = Instance.new("ImageLabel", frame)
+candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
+candyCorn.BackgroundTransparency = 1
+candyCorn.Image = "rbxassetid://2576547983"  -- Updated asset ID
+candyCorn.ScaleType = Enum.ScaleType.Fit
+
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
 amountDisplay.Size = UDim2.new(0.6, 0, 0.5, 0)
@@ -58,30 +66,46 @@ originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 updateCurrencyAmount()
 
 -- Create the close button (X)
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0.1, 0, 0.5, 0)
-closeButton.Position = UDim2.new(0.9, 0, 0.25, 0)
-closeButton.BackgroundTransparency = 1
-closeButton.TextColor3 = Color3.new(1, 0, 0)
-closeButton.TextScaled = true
+local closeButtonContainer = Instance.new("Frame", frame)
+closeButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
+closeButtonContainer.Position = UDim2.new(0.9, 0, 0.25, 0)
+closeButtonContainer.BackgroundColor3 = Color3.fromRGB(255, 200, 200)
+closeButtonContainer.BorderSizePixel = 0
+closeButtonContainer.BackgroundTransparency = 0.2
+
+local closeButton = Instance.new("TextButton", closeButtonContainer)
+closeButton.Size = UDim2.new(1, 0, 1, 0)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.Font = Enum.Font.SourceSansBold
+closeButton.TextSize = 36
 closeButton.Text = "X"
 
 -- Hover effect for close button
 closeButton.MouseEnter:Connect(function()
-    closeButton.TextColor3 = Color3.new(1, 0.5, 0.5) -- Change color on hover
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)  -- Darker red on hover
 end)
 
 closeButton.MouseLeave:Connect(function()
-    closeButton.TextColor3 = Color3.new(1, 0, 0) -- Original color
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
 end)
 
 -- Function to create the sinking effect
 local function sinkCloseButton()
     local tweenService = game:GetService("TweenService")
-    tweenService:Create(closeButton, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = UDim2.new(0.9, 0, 0.35, 0) }):Play()
+    
+    -- Sink the button container
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.9, 0, 0.35, 0),
+        Size = UDim2.new(0.1, 0, 0.4, 0)
+    }):Play()
+    
+    -- Reset effect after a short delay
     wait(0.1)
-    tweenService:Create(closeButton, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = UDim2.new(0.9, 0, 0.25, 0) }):Play()
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.9, 0, 0.25, 0),
+        Size = UDim2.new(0.1, 0, 0.5, 0)
+    }):Play()
 end
 
 -- Close button functionality with tween
@@ -91,10 +115,10 @@ closeButton.MouseButton1Click:Connect(function()
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1
+        Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
     })
     closeTween:Play()
-    closeTween.Completed:Wait()
+    closeTween.Completed:Wait()  -- Wait for the animation to complete
     currencyUI:Destroy()  -- Close the UI
 end)
 
@@ -140,7 +164,7 @@ end)
 
 userInputService.InputChanged:Connect(updateInput)
 
--- Hover effects for frame
+-- Hover effects for the frame
 frame.MouseEnter:Connect(function()
     local tweenService = game:GetService("TweenService")
     tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
