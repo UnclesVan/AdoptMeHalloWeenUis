@@ -37,7 +37,7 @@ ownerLabel.Parent = frame
 
 -- Create the bucks image
 local bucksImage = Instance.new("ImageLabel", frame)
-bucksImage.Size = UDim2.new(0.25, 0, 1, 0) -- Increased size
+bucksImage.Size = UDim2.new(0.25, 0, 1, 0)
 bucksImage.Position = UDim2.new(0.02, 0, 0, 0)
 bucksImage.BackgroundTransparency = 1
 bucksImage.Image = "rbxassetid://2576547983" -- Bucks image ID
@@ -46,7 +46,7 @@ bucksImage.ScaleType = Enum.ScaleType.Fit
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
 amountDisplay.Size = UDim2.new(0.6, 0, 0.5, 0)
-amountDisplay.Position = UDim2.new(0.3, 0, 0.25, 0) -- Adjusted for closeness
+amountDisplay.Position = UDim2.new(0.3, 0, 0.25, 0)
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
@@ -65,28 +65,56 @@ originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 -- Initialize the amount display
 updateCurrencyAmount()
 
+-- Create a frame behind the close button for the sink effect
+local closeButtonContainer = Instance.new("Frame", frame)
+closeButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
+closeButtonContainer.Position = UDim2.new(0.9, 0, 0.25, 0)
+closeButtonContainer.BackgroundColor3 = Color3.fromRGB(255, 200, 200)
+closeButtonContainer.BorderSizePixel = 0
+closeButtonContainer.BackgroundTransparency = 0.2
+
 -- Create the close button (X)
-local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0.1, 0, 0.5, 0)
-closeButton.Position = UDim2.new(0.9, 0, 0.25, 0)
-closeButton.BackgroundTransparency = 1
-closeButton.TextColor3 = Color3.new(1, 0, 0)
-closeButton.TextScaled = true
+local closeButton = Instance.new("TextButton", closeButtonContainer)
+closeButton.Size = UDim2.new(1, 0, 1, 0)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.Font = Enum.Font.SourceSansBold
+closeButton.TextSize = 36
 closeButton.Text = "X"
 
--- Close button functionality with tween
+-- Hover effect for close button
+closeButton.MouseEnter:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)  -- Darker red on hover
+end)
+
+closeButton.MouseLeave:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
+end)
+
+-- Function to create the sinking effect
+local function sinkCloseButton()
+    local tweenService = game:GetService("TweenService")
+    
+    -- Sink the button container
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = UDim2.new(0.9, 0, 0.35, 0), Size = UDim2.new(0.1, 0, 0.4, 0) }):Play()
+    
+    -- Reset effect after a short delay
+    wait(0.1)
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Position = UDim2.new(0.9, 0, 0.25, 0), Size = UDim2.new(0.1, 0, 0.5, 0) }):Play()
+end
+
+-- Connect close button click to sink effect and closing
 closeButton.MouseButton1Click:Connect(function()
+    sinkCloseButton()
+    wait(0.2)  -- Wait before closing
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 0, 0, 0),
-        BackgroundTransparency = 1
+        Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
     })
     closeTween:Play()
-    closeTween.Completed:Wait()
-    
-    -- Destroy the entire UI after the tween completes
-    currencyUI:Destroy()
+    closeTween.Completed:Wait()  -- Wait for the animation to complete
+    currencyUI:Destroy()  -- Close the UI
 end)
 
 -- Function to pop in the UI
@@ -131,7 +159,7 @@ end)
 
 userInputService.InputChanged:Connect(updateInput)
 
--- Hover effects
+-- Hover effects for the main frame
 frame.MouseEnter:Connect(function()
     local tweenService = game:GetService("TweenService")
     local hoverTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
