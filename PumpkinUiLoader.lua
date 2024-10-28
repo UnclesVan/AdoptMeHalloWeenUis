@@ -40,10 +40,10 @@ local pumpkin = Instance.new("ImageLabel", frame)
 pumpkin.Size = UDim2.new(0.2, 0, 1, 0)
 pumpkin.Position = UDim2.new(0, 0, 0, 0)
 pumpkin.BackgroundTransparency = 1
-pumpkin.Image = "rbxassetid://125606063774512"
+pumpkin.Image = "rbxassetid://125606063774512"  -- Pumpkin image
 pumpkin.ScaleType = Enum.ScaleType.Fit
 
--- Create a frame behind the close button for the sink effect
+-- Create the close button (X)
 local closeButtonContainer = Instance.new("Frame", frame)
 closeButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
 closeButtonContainer.Position = UDim2.new(0.85, 0, 0.25, 0)
@@ -51,7 +51,6 @@ closeButtonContainer.BackgroundColor3 = Color3.fromRGB(255, 200, 200)
 closeButtonContainer.BorderSizePixel = 0
 closeButtonContainer.BackgroundTransparency = 0.2
 
--- Create the close button (X)
 local closeButton = Instance.new("TextButton", closeButtonContainer)
 closeButton.Size = UDim2.new(1, 0, 1, 0)
 closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
@@ -67,21 +66,6 @@ end)
 
 closeButton.MouseLeave:Connect(function()
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
-end)
-
--- Hover effect for main frame with scale animation and shadow effect
-local originalSize = frame.Size
-
-frame.MouseEnter:Connect(function()
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0.31, 0, 0.11, 0)}):Play()
-    frame.BackgroundColor3 = Color3.fromRGB(240, 240, 240)  -- Lighten background
-end)
-
-frame.MouseLeave:Connect(function()
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = originalSize}):Play()
-    frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  -- Reset background color
 end)
 
 -- Function to create the sinking effect
