@@ -45,8 +45,8 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.6, 0, 0.5, 0)
-amountDisplay.Position = UDim2.new(0.3, 0, 0.25, 0)
+amountDisplay.Size = UDim2.new(0.6, 0, 0.5, 0)  -- Increased height
+amountDisplay.Position = UDim2.new(0.3, 0, 0.35, 0)  -- Moved down to avoid the button
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
