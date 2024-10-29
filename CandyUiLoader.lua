@@ -1,4 +1,3 @@
-
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -46,13 +45,14 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.55, 0, 0.5, 0)
-amountDisplay.Position = UDim2.new(0.4, 0, 0.25, 0)
+amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)  -- Increased height for better readability
+amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)  -- Adjusted position slightly left and up
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
+amountDisplay.TextSize = 80  -- Adjusted text size for readability
 amountDisplay.Text = originalAmountLabel.Text
 
 -- Function to update the amount
@@ -165,16 +165,14 @@ userInputService.InputChanged:Connect(updateInput)
 -- Hover effects for the frame
 frame.MouseEnter:Connect(function()
     local tweenService = game:GetService("TweenService")
-    local hoverTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
         Size = UDim2.new(0.32, 0, 0.17, 0)
-    })
-    hoverTween:Play()
+    }):Play()
 end)
 
 frame.MouseLeave:Connect(function()
     local tweenService = game:GetService("TweenService")
-    local shrinkTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0.3, 0, 0.15, 0)
-    })
-    shrinkTween:Play()
+    }):Play()
 end)
