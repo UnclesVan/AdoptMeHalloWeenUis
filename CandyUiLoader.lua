@@ -74,7 +74,7 @@ local function showNotification(amount)
     notificationLabel.TextTransparency = 0  -- Ensure it's fully visible
 
     -- Keep it visible for 1 second before fading
-    wait(1)  -- Adjust visibility duration here
+    wait(1)  -- Duration visible
 
     -- Fade out the notification
     local tweenService = game:GetService("TweenService")
@@ -124,6 +124,31 @@ closeButton.Text = "X"
 closeButton.MouseButton1Click:Connect(function()
     currencyUI:Destroy()  -- Close the UI
 end)
+
+-- Draggable functionality
+local dragging = false
+local dragStart = nil
+local startPos = nil
+local userInputService = game:GetService("UserInputService")
+
+local function updateInput(input)
+    if dragging then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Wait()
+        dragging = false
+    end
+end)
+
+userInputService.InputChanged:Connect(updateInput)
 
 -- Function to pop in the UI
 local function popInUI()
