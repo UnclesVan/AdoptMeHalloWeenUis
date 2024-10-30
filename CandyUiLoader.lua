@@ -73,13 +73,16 @@ local function showNotification(amount)
     notificationLabel.Visible = true
     notificationLabel.TextTransparency = 0  -- Ensure it's fully visible
 
+    -- Keep it visible for 1 second before fading
+    wait(1)  -- Adjust visibility duration here
+
     -- Fade out the notification
     local tweenService = game:GetService("TweenService")
     tweenService:Create(notificationLabel, TweenInfo.new(0.5), {
         TextTransparency = 1
     }):Play()
 
-    wait(1) -- Wait for the fade out to complete
+    wait(0.5) -- Wait for fade out to complete
     notificationLabel.Visible = false  -- Hide it after fading out
 end
 
