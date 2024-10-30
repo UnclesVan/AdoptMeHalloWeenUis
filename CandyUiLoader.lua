@@ -45,60 +45,19 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
-amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
+amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)  -- Increased height for better readability
+amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)  -- Adjusted position slightly left and up
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
-amountDisplay.TextSize = 80
+amountDisplay.TextSize = 80  -- Adjusted text size for readability
 amountDisplay.Text = originalAmountLabel.Text
 
--- Create TextLabel for notifications
-local notificationLabel = Instance.new("TextLabel", frame)
-notificationLabel.Size = UDim2.new(1, 0, 0.2, 0)
-notificationLabel.Position = UDim2.new(0, 0, 0.75, 0)
-notificationLabel.BackgroundTransparency = 1
-notificationLabel.TextColor3 = Color3.new(0, 1, 0)  -- Green color for notifications
-notificationLabel.TextScaled = true
-notificationLabel.Font = Enum.Font.SourceSansBold
-notificationLabel.TextStrokeTransparency = 0.5
-notificationLabel.Text = ""
-notificationLabel.Visible = false  -- Initially hidden
-
--- Function to show notification
-local function showNotification(amount)
-    notificationLabel.Text = "+" .. tostring(amount)
-    notificationLabel.Visible = true
-    notificationLabel.TextTransparency = 0  -- Ensure it's fully visible
-
-    -- Keep it visible for 1 second before fading
-    wait(1)  -- Duration visible
-
-    -- Fade out the notification
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(notificationLabel, TweenInfo.new(0.5), {
-        TextTransparency = 1
-    }):Play()
-
-    wait(0.5) -- Wait for fade out to complete
-    notificationLabel.Visible = false  -- Hide it after fading out
-end
-
--- Function to update the amount and show notification
+-- Function to update the amount
 local function updateCurrencyAmount()
-    local previousAmount = tonumber(amountDisplay.Text) or 0
-    local newAmount = tonumber(originalAmountLabel.Text) or 0
-    
-    -- Update the amount display
     amountDisplay.Text = originalAmountLabel.Text
-
-    -- Check if there was an increase
-    if newAmount > previousAmount then
-        local amountEarned = newAmount - previousAmount
-        showNotification(amountEarned)  -- Show notification for the amount earned
-    end
 end
 
 originalAmountLabel.Changed:Connect(updateCurrencyAmount)
@@ -120,10 +79,63 @@ closeButton.Font = Enum.Font.SourceSansBold
 closeButton.TextSize = 36
 closeButton.Text = "X"
 
+-- Hover effect for close button
+closeButton.MouseEnter:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)  -- Darker red on hover
+end)
+
+closeButton.MouseLeave:Connect(function()
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
+end)
+
+-- Function to create the sinking effect
+local function sinkCloseButton()
+    local tweenService = game:GetService("TweenService")
+    
+    -- Sink the button container
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.9, 0, 0.35, 0),
+        Size = UDim2.new(0.1, 0, 0.4, 0)
+    }):Play()
+    
+    -- Reset effect after a short delay
+    wait(0.1)
+    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.9, 0, 0.25, 0),
+        Size = UDim2.new(0.1, 0, 0.5, 0)
+    }):Play()
+end
+
 -- Close button functionality
 closeButton.MouseButton1Click:Connect(function()
+    sinkCloseButton()
+    wait(0.2)  -- Wait before closing
+    local tweenService = game:GetService("TweenService")
+    local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
+    })
+    closeTween:Play()
+    closeTween.Completed:Wait()  -- Wait for the animation to complete
     currencyUI:Destroy()  -- Close the UI
 end)
+
+-- Function to pop in the UI
+local function popInUI()
+    frame.Position = UDim2.new(0.5, -0.15, 0.1, 0)
+    frame.Size = UDim2.new(0, 0, 0, 0)
+    frame.Visible = true
+
+    local tweenService = game:GetService("TweenService")
+    local popTween = tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.5, -0.15, 0.05, 0),
+        Size = UDim2.new(0.3, 0, 0.15, 0)
+    })
+    popTween:Play()
+end
+
+-- Call the pop-in function to show the UI with animation
+popInUI()
 
 -- Draggable functionality
 local dragging = false
@@ -150,18 +162,17 @@ end)
 
 userInputService.InputChanged:Connect(updateInput)
 
--- Function to pop in the UI
-local function popInUI()
-    frame.Position = UDim2.new(0.5, -0.15, 0.1, 0)
-    frame.Size = UDim2.new(0, 0, 0, 0)
-    frame.Visible = true
-
+-- Hover effects for the frame
+frame.MouseEnter:Connect(function()
     local tweenService = game:GetService("TweenService")
-    tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -0.15, 0.05, 0),
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0.32, 0, 0.17, 0)
+    }):Play()
+end)
+
+frame.MouseLeave:Connect(function()
+    local tweenService = game:GetService("TweenService")
+    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0.3, 0, 0.15, 0)
     }):Play()
-end
-
--- Call the pop-in function to show the UI with animation
-popInUI()
+end)
