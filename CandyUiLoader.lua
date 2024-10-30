@@ -58,7 +58,7 @@ amountDisplay.Text = originalAmountLabel.Text
 -- Create TextLabel for notifications
 local notificationLabel = Instance.new("TextLabel", frame)
 notificationLabel.Size = UDim2.new(1, 0, 0.2, 0)
-notificationLabel.Position = UDim2.new(0, 0, 0.8, 0)
+notificationLabel.Position = UDim2.new(0, 0, 0.75, 0)
 notificationLabel.BackgroundTransparency = 1
 notificationLabel.TextColor3 = Color3.new(0, 1, 0)  -- Green color for notifications
 notificationLabel.TextScaled = true
@@ -71,23 +71,16 @@ notificationLabel.Visible = false  -- Initially hidden
 local function showNotification(amount)
     notificationLabel.Text = "+" .. tostring(amount)
     notificationLabel.Visible = true
+    notificationLabel.TextTransparency = 0  -- Ensure it's fully visible
 
-    -- Fade in
-    notificationLabel.TextTransparency = 0
+    -- Fade out the notification
     local tweenService = game:GetService("TweenService")
-    tweenService:Create(notificationLabel, TweenInfo.new(0.5), {
-        TextTransparency = 0
-    }):Play()
-
-    wait(2) -- Display duration
-
-    -- Fade out
     tweenService:Create(notificationLabel, TweenInfo.new(0.5), {
         TextTransparency = 1
     }):Play()
-    wait(0.5) -- Wait for fade out to complete
 
-    notificationLabel.Visible = false
+    wait(1) -- Wait for the fade out to complete
+    notificationLabel.Visible = false  -- Hide it after fading out
 end
 
 -- Function to update the amount and show notification
