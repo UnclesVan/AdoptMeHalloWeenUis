@@ -52,7 +52,6 @@ amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
-amountDisplay.TextSize = 80
 amountDisplay.Text = originalAmountLabel.Text
 
 -- Function to update the amount
@@ -79,6 +78,18 @@ timerLabel.TextScaled = true
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
 
+-- Create TextLabel for the kick warning
+local kickWarning = Instance.new("TextLabel", frame)
+kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
+kickWarning.Position = UDim2.new(0, 0, 0.85, 0) -- Adjusted further down
+kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
+kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
+kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+kickWarning.TextScaled = true
+kickWarning.Font = Enum.Font.SourceSansBold
+kickWarning.TextStrokeTransparency = 0.5
+kickWarning.Text = "Warning: You will be kicked when the countdown hits 0"
+
 -- Function to update the timer
 local function updateTimer()
     while timeRemaining > 0 do
@@ -94,19 +105,17 @@ local function updateTimer()
     player:Kick("Your time is up! Please check Play Adopt me Twitter and their discord for updates on when Halloween will return. 🎃🎃🎃🎃🎃🎃🎃")
 end
 
--- Start the timer in a separate thread
-spawn(updateTimer)
+-- Check if the timer has already expired before starting
+if not timerExpired then
+    -- Start the timer in a separate thread
+    spawn(updateTimer)
 
--- Create a label for the kick warning
-local kickWarningLabel = Instance.new("TextLabel", frame)
-kickWarningLabel.Size = UDim2.new(1, 0, 0.15, 0)  -- Adjusted size for better visibility
-kickWarningLabel.Position = UDim2.new(0, 0, 0.25, 0)
-kickWarningLabel.BackgroundTransparency = 1
-kickWarningLabel.TextColor3 = Color3.fromRGB(255, 0, 0)  -- Set text color to red
-kickWarningLabel.TextScaled = true
-kickWarningLabel.Font = Enum.Font.SourceSansBold
-kickWarningLabel.TextStrokeTransparency = 0.5
-kickWarningLabel.Text = "your character will be kicked when the countdown hits 0"
+    -- Optional: Initial display for the timer
+    timerLabel.Text = string.format("EVENT ENDS IN: %d DAYS", math.ceil(timeRemaining / (24 * 60 * 60)))
+else
+    -- Timer has already expired; you might want to handle this case
+    timerLabel.Text = "Timer already expired."
+end
 
 -- Create the close button (X)
 local closeButtonContainer = Instance.new("Frame", frame)
