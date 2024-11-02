@@ -45,23 +45,57 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)  -- Increased height for better readability
-amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)  -- Adjusted position slightly left and up
+amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
+amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
-amountDisplay.TextSize = 80  -- Adjusted text size for readability
+amountDisplay.TextSize = 80
 amountDisplay.Text = originalAmountLabel.Text
 
 -- Function to update the amount
 local function updateCurrencyAmount()
-    amountDisplay.Text = originalAmountLabel.Text
+	amountDisplay.Text = originalAmountLabel.Text
 end
 
 originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 updateCurrencyAmount()
+
+-- Timer variables
+local durationInDays = 13
+local durationInSeconds = durationInDays * 24 * 60 * 60  -- 13 days in seconds
+local timeRemaining = durationInSeconds
+
+-- Create a label to display the timer
+local timerLabel = Instance.new("TextLabel", frame)
+timerLabel.Size = UDim2.new(1, 0, 0.2, 0)
+timerLabel.Position = UDim2.new(0.009, 0, -0.258, 0)
+timerLabel.BackgroundTransparency = 1
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Set text color to white
+timerLabel.TextScaled = true
+timerLabel.Font = Enum.Font.SourceSansBold
+timerLabel.TextStrokeTransparency = 0.5
+
+-- Function to update the timer
+local function updateTimer()
+	while timeRemaining > 0 do
+		local days = math.floor(timeRemaining / (24 * 60 * 60))
+		local hours = math.floor((timeRemaining % (24 * 60 * 60)) / (60 * 60))
+		local minutes = math.floor((timeRemaining % (60 * 60)) / 60)
+		local seconds = timeRemaining % 60
+		timerLabel.Text = string.format("EVENT ENDS IN: %02d:%02d:%02d:%02d", days, hours, minutes, seconds)
+		wait(1)
+		timeRemaining = timeRemaining - 1
+	end
+
+	-- When the timer ends
+	timerLabel.Text = "Time's Up!"
+end
+
+-- Start the timer in a separate thread
+spawn(updateTimer)
 
 -- Create the close button (X)
 local closeButtonContainer = Instance.new("Frame", frame)
@@ -81,57 +115,54 @@ closeButton.Text = "X"
 
 -- Hover effect for close button
 closeButton.MouseEnter:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)  -- Darker red on hover
+	closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 end)
 
 closeButton.MouseLeave:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
+	closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
 end)
 
 -- Function to create the sinking effect
 local function sinkCloseButton()
-    local tweenService = game:GetService("TweenService")
-    
-    -- Sink the button container
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.35, 0),
-        Size = UDim2.new(0.1, 0, 0.4, 0)
-    }):Play()
-    
-    -- Reset effect after a short delay
-    wait(0.1)
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.25, 0),
-        Size = UDim2.new(0.1, 0, 0.5, 0)
-    }):Play()
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.9, 0, 0.35, 0),
+		Size = UDim2.new(0.1, 0, 0.4, 0)
+	}):Play()
+
+	wait(0.1)
+	tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.9, 0, 0.25, 0),
+		Size = UDim2.new(0.1, 0, 0.5, 0)
+	}):Play()
 end
 
 -- Close button functionality
 closeButton.MouseButton1Click:Connect(function()
-    sinkCloseButton()
-    wait(0.2)  -- Wait before closing
-    local tweenService = game:GetService("TweenService")
-    local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
-    })
-    closeTween:Play()
-    closeTween.Completed:Wait()  -- Wait for the animation to complete
-    currencyUI:Destroy()  -- Close the UI
+	sinkCloseButton()
+	wait(0.2)
+	local tweenService = game:GetService("TweenService")
+	local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 0, 0, 0),
+		Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
+	})
+	closeTween:Play()
+	closeTween.Completed:Wait()
+	currencyUI:Destroy()
 end)
 
 -- Function to pop in the UI
 local function popInUI()
-    frame.Position = UDim2.new(0.5, -0.15, 0.1, 0)
-    frame.Size = UDim2.new(0, 0, 0, 0)
-    frame.Visible = true
+	frame.Position = UDim2.new(0.5, -0.15, 0.1, 0)
+	frame.Size = UDim2.new(0, 0, 0, 0)
+	frame.Visible = true
 
-    local tweenService = game:GetService("TweenService")
-    local popTween = tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -0.15, 0.05, 0),
-        Size = UDim2.new(0.3, 0, 0.15, 0)
-    })
-    popTween:Play()
+	local tweenService = game:GetService("TweenService")
+	local popTween = tweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, -0.15, 0.05, 0),
+		Size = UDim2.new(0.3, 0, 0.15, 0)
+	})
+	popTween:Play()
 end
 
 -- Call the pop-in function to show the UI with animation
@@ -144,35 +175,35 @@ local startPos = nil
 local userInputService = game:GetService("UserInputService")
 
 local function updateInput(input)
-    if dragging then
-        local delta = input.Position - dragStart
-        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
+	if dragging then
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
 end
 
 frame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = frame.Position
-        input.Changed:Wait()
-        dragging = false
-    end
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+		input.Changed:Wait()
+		dragging = false
+	end
 end)
 
 userInputService.InputChanged:Connect(updateInput)
 
 -- Hover effects for the frame
 frame.MouseEnter:Connect(function()
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0.32, 0, 0.17, 0)
-    }):Play()
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0.32, 0, 0.17, 0)
+	}):Play()
 end)
 
 frame.MouseLeave:Connect(function()
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0.3, 0, 0.15, 0)
-    }):Play()
+	local tweenService = game:GetService("TweenService")
+	tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0.3, 0, 0.15, 0)
+	}):Play()
 end)
