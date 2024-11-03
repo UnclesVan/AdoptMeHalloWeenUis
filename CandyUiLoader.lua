@@ -94,7 +94,7 @@ kickWarning.Text = "Warning: You will be kicked when the countdown hits 0"
 local function updateTimer()
     while timeRemaining > 0 do
         local days = math.ceil(timeRemaining / (24 * 60 * 60))
-        timerLabel.Text = string.format("EVENT ENDS IN: %d DAYS", days)
+        timerLabel.Text = string.format("TIMER IS BROKEN FIXING IT", days)
         wait(1)
         timeRemaining = timeRemaining - 1
     end
