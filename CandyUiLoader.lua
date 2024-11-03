@@ -88,7 +88,7 @@ kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "Warning: You will be kicked when the countdown hits 0"
+kickWarning.Text = "TIMER IS BROKEN FIXING IT"
 
 -- Function to update the timer
 local function updateTimer()
