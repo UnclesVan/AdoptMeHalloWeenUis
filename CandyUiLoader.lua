@@ -1,10 +1,14 @@
+-- Variables for player and UI references
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Reference the original amount label
 local originalAmountLabel = playerGui:WaitForChild("AltCurrencyIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
 
--- Create the ScreenGui
+-- Reference the original timer label
+local originalTimerLabel = playerGui:WaitForChild("QuestIconApp"):WaitForChild("ImageButton"):WaitForChild("EventContainer"):WaitForChild("EventFrame"):WaitForChild("EventImageBottom"):WaitForChild("EventTime")
+
+-- Create the ScreenGui for the currency display
 local currencyUI = Instance.new("ScreenGui")
 currencyUI.Name = "CurrencyUI"
 currencyUI.Parent = playerGui
@@ -23,27 +27,7 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0.2, 0)
 corner.Parent = frame
 
--- Create TextLabel for script owner
-local ownerLabel = Instance.new("TextLabel")
-ownerLabel.Size = UDim2.new(1, 0, 0.3, 0)
-ownerLabel.Position = UDim2.new(0, 0, 0, 0)
-ownerLabel.BackgroundTransparency = 1
-ownerLabel.TextColor3 = Color3.new(0, 0, 0)
-ownerLabel.TextScaled = true
-ownerLabel.Font = Enum.Font.SourceSansBold
-ownerLabel.TextStrokeTransparency = 0.5
-ownerLabel.Text = "Private Script Owner: made by me"
-ownerLabel.Parent = frame
-
--- Create the candy corn image
-local candyCorn = Instance.new("ImageLabel", frame)
-candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
-candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
-candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://5865214349"
-candyCorn.ScaleType = Enum.ScaleType.Fit
-
--- Create TextLabel for amount
+-- Create TextLabel for the currency amount
 local amountDisplay = Instance.new("TextLabel", frame)
 amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
 amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
@@ -63,59 +47,79 @@ originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 updateCurrencyAmount()
 
 -- Timer variables
-local durationInDays = 13  -- Set to 13 days
-local durationInSeconds = durationInDays * 24 * 60 * 60  -- 13 days in seconds
+local durationInDays = 11  -- Set to 11 days
+local durationInSeconds = durationInDays * 24 * 60 * 60  -- Convert to seconds
 local timeRemaining = durationInSeconds
-local timerExpired = false  -- Variable to track if the timer has expired
 
 -- Create a label to display the timer
-local timerLabel = Instance.new("TextLabel", frame)
-timerLabel.Size = UDim2.new(1, 0, 0.2, 0)
-timerLabel.Position = UDim2.new(0.009, 0, -0.258, 0)
+local timerLabel = Instance.new("TextLabel", frame) -- Keep it as a child of the frame
+timerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Adjust height
+timerLabel.Position = UDim2.new(0, 0, -0.4, 0) -- Move higher within the frame
 timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Set text color to white
 timerLabel.TextScaled = true
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
 
+-- Function to update the timer display
+local function updateTimer()
+    while timeRemaining > 0 do
+        local days = math.ceil(timeRemaining / (24 * 60 * 60))
+        timerLabel.Text = string.format("EVENT ENDS IN: %d DAYS", days)
+        wait(1)
+        timeRemaining = timeRemaining - 1
+    end
+    timerLabel.Text = "Time's Up!"
+end
+
+-- Start the timer
+spawn(updateTimer)
+
+-- Function to copy the game's timer UI
+local function updateTimerFromGameUI()
+    if originalTimerLabel then
+        timerLabel.Text = originalTimerLabel.Text
+    end
+end
+
+-- Connect to the original timer label's Changed event
+if originalTimerLabel then
+    originalTimerLabel.Changed:Connect(updateTimerFromGameUI)
+end
+
+-- Initial display
+updateTimerFromGameUI()
+
 -- Create TextLabel for the kick warning
 local kickWarning = Instance.new("TextLabel", frame)
 kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
-kickWarning.Position = UDim2.new(0, 0, 0.85, 0) -- Adjusted further down
+kickWarning.Position = UDim2.new(0, 0, 0.95, 0) -- Positioned slightly lower
 kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
 kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
 kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "TIMER IS BROKEN FIXING IT"
+kickWarning.Text = "You will be kicked once the timer hits 0"
 
--- Function to update the timer
-local function updateTimer()
-    while timeRemaining > 0 do
-        local days = math.ceil(timeRemaining / (24 * 60 * 60))
-        timerLabel.Text = string.format("TIMER IS BROKEN FIXING IT", days)
-        wait(1)
-        timeRemaining = timeRemaining - 1
-    end
+-- Create TextLabel for script owner
+local ownerLabel = Instance.new("TextLabel", frame)
+ownerLabel.Size = UDim2.new(1, 0, 0.2, 0)
+ownerLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Moved down further
+ownerLabel.BackgroundTransparency = 1
+ownerLabel.TextColor3 = Color3.new(0, 0, 0)
+ownerLabel.TextScaled = true
+ownerLabel.Font = Enum.Font.SourceSansBold
+ownerLabel.TextStrokeTransparency = 0.5
+ownerLabel.Text = "Private Script Owner: made by me"
 
-    -- When the timer ends
-    timerLabel.Text = "Time's Up!"
-    timerExpired = true  -- Set the timer as expired
-    player:Kick("Your time is up! Please check Play Adopt me Twitter and their discord for updates on when Halloween will return. 🎃🎃🎃🎃🎃🎃🎃")
-end
-
--- Check if the timer has already expired before starting
-if not timerExpired then
-    -- Start the timer in a separate thread
-    spawn(updateTimer)
-
-    -- Optional: Initial display for the timer
-    timerLabel.Text = string.format("EVENT ENDS IN: %d DAYS", math.ceil(timeRemaining / (24 * 60 * 60)))
-else
-    -- Timer has already expired; you might want to handle this case
-    timerLabel.Text = "Timer already expired."
-end
+-- Create the candy corn image
+local candyCorn = Instance.new("ImageLabel", frame)
+candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0) -- Adjust position as needed
+candyCorn.BackgroundTransparency = 1
+candyCorn.Image = "rbxassetid://5865214349"
+candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create the close button (X)
 local closeButtonContainer = Instance.new("Frame", frame)
@@ -142,25 +146,8 @@ closeButton.MouseLeave:Connect(function()
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
 end)
 
--- Function to create the sinking effect
-local function sinkCloseButton()
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.35, 0),
-        Size = UDim2.new(0.1, 0, 0.4, 0)
-    }):Play()
-
-    wait(0.1)
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.25, 0),
-        Size = UDim2.new(0.1, 0, 0.5, 0)
-    }):Play()
-end
-
 -- Close button functionality
 closeButton.MouseButton1Click:Connect(function()
-    sinkCloseButton()
-    wait(0.2)
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 0, 0, 0),
