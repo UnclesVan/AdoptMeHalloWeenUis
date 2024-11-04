@@ -1,4 +1,4 @@
--- Variables for player and UI references
+-- Variables for player and UI references 
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -70,6 +70,7 @@ local function updateTimer()
         timeRemaining = timeRemaining - 1
     end
     timerLabel.Text = "Time's Up!"
+    player:Kick("You have been kicked from the Experience please head to play adopt me twitter and discord for any updates on when Halloween will return. 🎃🎃🎃🎃🎃🎃🎃 this script will be updated for Christmas so stay tuned for any updates. ☃️☃️☃️☃️☃️☃️☃️")
 end
 
 -- Start the timer
@@ -93,14 +94,14 @@ updateTimerFromGameUI()
 -- Create TextLabel for the kick warning
 local kickWarning = Instance.new("TextLabel", frame)
 kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
-kickWarning.Position = UDim2.new(0, 0, 0.95, 0) -- Positioned slightly lower
+kickWarning.Position = UDim2.new(0, 0, 0.90, 0) -- Positioned below the timer
 kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
 kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
 kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "You will be kicked once the timer hits 0"
+kickWarning.Text = "You will be kicked once the timer hits 0."
 
 -- Create TextLabel for script owner
 local ownerLabel = Instance.new("TextLabel", frame)
