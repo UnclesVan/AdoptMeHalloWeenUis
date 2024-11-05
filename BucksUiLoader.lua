@@ -35,7 +35,7 @@ ownerLabel.TextStrokeTransparency = 0.5
 ownerLabel.Text = "Private Script Owner: made by me"
 ownerLabel.Parent = frame
 
--- Create the new image
+-- Create the candy corn image
 local candyCorn = Instance.new("ImageLabel", frame)
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
 candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
@@ -45,8 +45,8 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Create TextLabel for amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.6, 0, 0.7, 0)  -- Increased height further
-amountDisplay.Position = UDim2.new(0.3, 0, 0.2, 0)  -- Adjusted position to center better
+amountDisplay.Size = UDim2.new(0.6, 0, 0.7, 0)
+amountDisplay.Position = UDim2.new(0.3, 0, 0.2, 0)
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
@@ -65,7 +65,7 @@ originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 -- Initialize the amount display
 updateCurrencyAmount()
 
--- Create the close button (X)
+-- Create the "Close" button (X)
 local closeButtonContainer = Instance.new("Frame", frame)
 closeButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
 closeButtonContainer.Position = UDim2.new(0.9, 0, 0.25, 0)
@@ -90,28 +90,8 @@ closeButton.MouseLeave:Connect(function()
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
 end)
 
--- Function to create the sinking effect
-local function sinkCloseButton()
-    local tweenService = game:GetService("TweenService")
-    
-    -- Sink the button container
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.35, 0),
-        Size = UDim2.new(0.1, 0, 0.4, 0)
-    }):Play()
-    
-    -- Reset effect after a short delay
-    wait(0.1)
-    tweenService:Create(closeButtonContainer, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.9, 0, 0.25, 0),
-        Size = UDim2.new(0.1, 0, 0.5, 0)
-    }):Play()
-end
-
 -- Close button functionality with tween
 closeButton.MouseButton1Click:Connect(function()
-    sinkCloseButton()
-    wait(0.2)  -- Wait before closing
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, 0, 0, 0),
@@ -120,6 +100,71 @@ closeButton.MouseButton1Click:Connect(function()
     closeTween:Play()
     closeTween.Completed:Wait()  -- Wait for the animation to complete
     currencyUI:Destroy()  -- Close the UI
+end)
+
+-- Create the "Open" button
+local openButtonContainer = Instance.new("Frame", frame)
+openButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
+openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned right beside the close button
+openButtonContainer.BackgroundColor3 = Color3.fromRGB(200, 255, 200)
+openButtonContainer.BorderSizePixel = 0
+openButtonContainer.BackgroundTransparency = 0.2
+
+local openButton = Instance.new("TextButton", openButtonContainer)
+openButton.Size = UDim2.new(1, 0, 1, 0)
+openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
+openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.Font = Enum.Font.SourceSansBold
+openButton.TextSize = 24
+openButton.Text = "Open"
+
+-- Hover effect for open button
+openButton.MouseEnter:Connect(function()
+    openButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+end)
+
+openButton.MouseLeave:Connect(function()
+    openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
+end)
+
+-- Open button functionality (opens the Fluent UI window or Fire Hub)
+openButton.MouseButton1Click:Connect(function()
+    -- Load the Fluent UI library and create the window
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    
+    if Fluent then
+        -- Create the window
+        local Window = Fluent:CreateWindow({
+            Title = "Fire Hub",  
+            SubTitle = "Testing UI Functionality",
+            TabWidth = 160,
+            Size = UDim2.fromOffset(580, 460),
+            Acrylic = false,
+            Theme = "Dark",
+        })
+
+        -- Create the "Main" tab
+        local Tabs = {}
+        Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
+        
+        -- Create the "Stamps Farm" tab
+        Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
+
+        -- Add the "Stamps Farm" button to the "Stamps Farm" tab
+        local stampsButton = Tabs.StampsFarm:AddButton({
+            Title = "Stamps Farm",
+            TextColor = Color3.fromRGB(0, 255, 0),  -- You can adjust the color
+            Font = Enum.Font.SourceSansBold,
+            TextSize = 20,
+            Callback = function()
+                print("Stamps Farm Button Clicked!")
+                -- You can add your functionality for Stamps Farm here
+            end
+        })
+
+        -- Show the window
+        Window.Visible = true
+    end
 end)
 
 -- Function to pop in the UI
