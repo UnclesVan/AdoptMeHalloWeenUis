@@ -165,9 +165,9 @@ openButtonContainer.BackgroundTransparency = 0.2
 local openButton = Instance.new("TextButton", openButtonContainer)
 openButton.Size = UDim2.new(1, 0, 1, 0)
 openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
-openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 openButton.Font = Enum.Font.SourceSansBold
-openButton.TextSize = 24  -- Adjusted text size to 24 for better fit
+openButton.TextSize = 24
 openButton.Text = "Open"
 
 -- Hover effect for open button
@@ -205,12 +205,29 @@ openButton.MouseButton1Click:Connect(function()
         -- Add a new tab for Pet-Farm
         Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
 
-        -- Add "Stamps" button under the Stamps Farm tab
+        -- Toggleable farming logic for Stamps
+        local farmingActive = false -- Variable to track farming state
+
+        -- Add a new button to the "Stamps Farm" tab after it is created
         local stampsButton = Tabs.StampsFarm:AddButton({
-            Title = "Collect Stamps", -- Added Title here
+            Title = "Collect Stamps", -- Title for the button
             Callback = function()
-                print("Stamps button clicked!")
-                -- Place your stamps logic here, e.g. start a farm process
+                if farmingActive then
+                    -- Stop farming when clicked again
+                    print("Stopping stamp collection.")
+                    farmingActive = false
+                else
+                    -- Start farming when clicked
+                    print("Starting stamp collection.")
+                    farmingActive = true
+
+                    -- Example farming action: simulate ongoing collection while farmingActive is true
+                    while farmingActive do
+                        -- Add logic for the farming process here, for example:
+                        print("Collecting stamps...")
+                        wait(1)  -- Simulate the time between stamp collections
+                    end
+                end
             end
         })
 
