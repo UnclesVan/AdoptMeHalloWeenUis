@@ -223,8 +223,16 @@ openButton.MouseButton1Click:Connect(function()
 
                     -- Example farming action: simulate ongoing collection while farmingActive is true
                     while farmingActive do
-                        -- Add logic for the farming process here, for example:
+                        -- Add logic for the farming process here
                         print("Collecting stamps...")
+
+                        -- Trigger the server event to claim stamps
+                        local api = game:GetService("ReplicatedStorage"):WaitForChild("API")
+                        local claimStamp = api:FindFirstChild("DdlmAPI/ClaimStamp")
+                        if claimStamp then
+                            claimStamp:FireServer()  -- Fire the claim server event
+                        end
+
                         wait(1)  -- Simulate the time between stamp collections
                     end
                 end
