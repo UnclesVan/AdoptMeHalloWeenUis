@@ -131,7 +131,7 @@ end)
 openButton.MouseButton1Click:Connect(function()
     -- Load the Fluent UI library and create the window
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-    
+
     if Fluent then
         -- Create the window
         local Window = Fluent:CreateWindow({
@@ -161,6 +161,71 @@ openButton.MouseButton1Click:Connect(function()
                 -- You can add your functionality for Stamps Farm here
             end
         })
+
+        -- Continuous claim feature for stamps
+        local isClaiming = false
+        local claimButton = Tabs.StampsFarm:AddButton({
+            Title = "Claim Stamp",
+            TextColor = Color3.fromRGB(255, 165, 0),
+            Font = Enum.Font.SourceSansBold,
+            TextSize = 20,
+            Callback = function()
+                isClaiming = not isClaiming
+                if isClaiming then
+                    claimButton.Text = "Stop Claiming"
+                    -- Start continuous claiming loop
+                    while isClaiming do
+                        print("Claiming stamp...")
+                        -- Add the function for claiming the stamp here
+                        wait(1)  -- Adjust the speed of claiming (you can change the time here)
+                    end
+                else
+                    claimButton.Text = "Claim Stamp"
+                end
+            end
+        })
+
+        -- Create the "Christmas" tab
+        Tabs.Christmas = Window:AddTab({ Title = "Christmas", Icon = "" })
+
+        -- Add the "Coming Soon" label and button to "Christmas" tab
+        local christmasLabel = Instance.new("TextLabel")
+        christmasLabel.Size = UDim2.new(1, 0, 0.3, 0)
+        christmasLabel.Position = UDim2.new(0, 0, 0.3, 0)
+        christmasLabel.BackgroundTransparency = 1
+        christmasLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+        christmasLabel.TextScaled = true
+        christmasLabel.Font = Enum.Font.SourceSansBold
+        christmasLabel.TextStrokeTransparency = 0.5
+        christmasLabel.Text = "Coming Soon"
+        christmasLabel.Parent = Tabs.Christmas
+
+        -- "Collect Gingerbread" button
+        local collectButton = Tabs.Christmas:AddButton({
+            Title = "Collect Gingerbread",
+            TextColor = Color3.fromRGB(255, 255, 0),
+            Font = Enum.Font.SourceSansBold,
+            TextSize = 20,
+            Callback = function()
+                print("Collect Gingerbread Button Clicked!")
+                -- Functionality for collecting gingerbread can go here
+            end
+        })
+
+        -- Create the "Pet Farm" tab
+        Tabs.PetFarm = Window:AddTab({ Title = "Pet Farm", Icon = "" })
+
+        -- "Coming Soon" label for Pet Farm
+        local petFarmLabel = Instance.new("TextLabel")
+        petFarmLabel.Size = UDim2.new(1, 0, 0.3, 0)
+        petFarmLabel.Position = UDim2.new(0, 0, 0.3, 0)
+        petFarmLabel.BackgroundTransparency = 1
+        petFarmLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+        petFarmLabel.TextScaled = true
+        petFarmLabel.Font = Enum.Font.SourceSansBold
+        petFarmLabel.TextStrokeTransparency = 0.5
+        petFarmLabel.Text = "Coming Soon"
+        petFarmLabel.Parent = Tabs.PetFarm
 
         -- Show the window
         Window.Visible = true
