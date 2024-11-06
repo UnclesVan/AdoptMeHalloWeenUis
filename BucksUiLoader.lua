@@ -2,18 +2,15 @@
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Reference the original amount label
-local originalAmountLabel = playerGui:WaitForChild("AltCurrencyIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
+-- Reference the original Bucks currency label
+local originalBucksLabel = playerGui:WaitForChild("BucksIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
 
--- Reference the original timer label
-local originalTimerLabel = playerGui:WaitForChild("QuestIconApp"):WaitForChild("ImageButton"):WaitForChild("EventContainer"):WaitForChild("EventFrame"):WaitForChild("EventImageBottom"):WaitForChild("EventTime")
-
--- Create the ScreenGui for the currency display
+-- Create the ScreenGui for the Bucks display
 local currencyUI = Instance.new("ScreenGui")
 currencyUI.Name = "CurrencyUI"
 currencyUI.Parent = playerGui
 
--- Create the Frame for the currency display
+-- Create the main frame for the Bucks display
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0.3, 0, 0.25, 0)
 frame.Position = UDim2.new(0.5, -0.15, 0.05, 0)
@@ -27,95 +24,41 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0.2, 0)
 corner.Parent = frame
 
--- Create TextLabel for the currency amount
-local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
-amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
-amountDisplay.BackgroundTransparency = 1
-amountDisplay.TextColor3 = Color3.new(0, 0, 0)
-amountDisplay.TextScaled = true
-amountDisplay.Font = Enum.Font.SourceSansBold
-amountDisplay.TextStrokeTransparency = 0.5
-amountDisplay.Text = originalAmountLabel.Text
-
--- Function to update the amount
-local function updateCurrencyAmount()
-    amountDisplay.Text = originalAmountLabel.Text
+-- Function to create TextLabels (helps avoid repetitive code)
+local function createTextLabel(parent, size, position, text, textColor, textSize, font)
+    local label = Instance.new("TextLabel", parent)
+    label.Size = size
+    label.Position = position
+    label.BackgroundTransparency = 1
+    label.TextColor3 = textColor
+    label.TextScaled = true
+    label.Font = font
+    label.TextSize = textSize
+    label.TextStrokeTransparency = 0.5
+    label.Text = text
+    return label
 end
 
-originalAmountLabel.Changed:Connect(updateCurrencyAmount)
-updateCurrencyAmount()
+-- Create TextLabel for the Bucks amount
+local amountDisplay = createTextLabel(frame, UDim2.new(0.55, 0, 0.7, 0), UDim2.new(0.35, 0, 0.25, 0), originalBucksLabel.Text, Color3.new(0, 0, 0), 36, Enum.Font.SourceSansBold)
 
--- Create a label to display the timer in your custom UI
-local timerLabel = Instance.new("TextLabel", frame)
-timerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Adjust height
-timerLabel.Position = UDim2.new(0, 0, -0.4, 0) -- Move higher within the frame
-timerLabel.BackgroundTransparency = 1
-timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Set text color to white
-timerLabel.TextScaled = true  -- Scales the text to fit
-timerLabel.Font = Enum.Font.SourceSansBold
-timerLabel.TextStrokeTransparency = 0.5
-
--- Set TextWrapping to false to prevent text from wrapping
-timerLabel.TextWrapped = false  -- Ensure the text does not wrap to a new line
-timerLabel.TextTruncate = Enum.TextTruncate.AtEnd  -- Truncate the text at the end if it exceeds the label width
-
--- Set a larger TextSize to make the timer more prominent
-timerLabel.TextSize = 36  -- Make the text size larger for visibility
-
--- Function to copy the game's timer text to your custom UI
-local function updateTimerFromGameUI()
-    if originalTimerLabel and originalTimerLabel.Text then
-        -- Extract the remaining time and format it
-        local remainingTimeText = originalTimerLabel.Text
-        local daysRemaining = string.match(remainingTimeText, "%d+")
-        if daysRemaining then
-            -- Update the timer with a custom message that includes the number of days remaining
-            timerLabel.Text = string.format("EVENT ENDS IN: %s DAYS", daysRemaining)
-        else
-            timerLabel.Text = "EVENT ENDS IN: -- DAYS"
-        end
-    end
+-- Update the Bucks display whenever the original amount changes
+local function updateBucksAmount()
+    amountDisplay.Text = originalBucksLabel.Text
 end
-
--- Connect to the original timer label's Changed event to update your custom timer UI
-if originalTimerLabel then
-    originalTimerLabel.Changed:Connect(updateTimerFromGameUI)
-end
-
--- Initial display update for the timer
-updateTimerFromGameUI()
+originalBucksLabel.Changed:Connect(updateBucksAmount)
+updateBucksAmount()
 
 -- Add the owner label
-local ownerLabel = Instance.new("TextLabel", frame)
-ownerLabel.Size = UDim2.new(1, 0, 0.2, 0)
-ownerLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned lower in the frame
-ownerLabel.BackgroundTransparency = 1
-ownerLabel.TextColor3 = Color3.new(0, 0, 0)
-ownerLabel.TextScaled = true
-ownerLabel.Font = Enum.Font.SourceSansBold
-ownerLabel.TextStrokeTransparency = 0.5
-ownerLabel.Text = "Private Script Owner: made by me"
+local ownerLabel = createTextLabel(frame, UDim2.new(1, 0, 0.2, 0), UDim2.new(0, 0, 0.1, 0), "Private Script Owner: made by me", Color3.new(0, 0, 0), 24, Enum.Font.SourceSansBold)
 
 -- Add the candy corn image
 local candyCorn = Instance.new("ImageLabel", frame)
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
-candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0) -- Adjust position as needed
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
 candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://5865214349"
+candyCorn.Image = "rbxassetid://2576547983"  -- Updated candy corn image asset ID
 candyCorn.ScaleType = Enum.ScaleType.Fit
-
--- Add the kick warning label
-local kickWarning = Instance.new("TextLabel", frame)
-kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
-kickWarning.Position = UDim2.new(0, 0, 0.85, 0) -- Positioned below the timer
-kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
-kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
-kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-kickWarning.TextScaled = true
-kickWarning.Font = Enum.Font.SourceSansBold
-kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "You will be kicked once the timer hits 0."
 
 -- Add the "Close" button
 local closeButtonContainer = Instance.new("Frame", frame)
@@ -152,91 +95,6 @@ closeButton.MouseButton1Click:Connect(function()
     closeTween:Play()
     closeTween.Completed:Wait()
     currencyUI:Destroy()
-end)
-
--- Add the "Open UI" button (Beside Close Button, Right Side)
-local openButtonContainer = Instance.new("Frame", frame)
-openButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
-openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned immediately beside the close button on the right
-openButtonContainer.BackgroundColor3 = Color3.fromRGB(200, 255, 200)
-openButtonContainer.BorderSizePixel = 0
-openButtonContainer.BackgroundTransparency = 0.2
-
-local openButton = Instance.new("TextButton", openButtonContainer)
-openButton.Size = UDim2.new(1, 0, 1, 0)
-openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
-openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-openButton.Font = Enum.Font.SourceSansBold
-openButton.TextSize = 24  -- Adjusted text size to 24 for better fit
-openButton.Text = "Open"
-
--- Hover effect for open button
-openButton.MouseEnter:Connect(function()
-    openButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
-end)
-
-openButton.MouseLeave:Connect(function()
-    openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
-end)
-
--- Open button functionality (opens the Fluent UI window)
-openButton.MouseButton1Click:Connect(function()
-    -- Load the Fluent UI library and create the window
-    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-
-    if Fluent then
-        local Window = Fluent:CreateWindow({
-            Title = "Fire Hub",  
-            SubTitle = "Testing UI Functionality",
-            TabWidth = 160,
-            Size = UDim2.fromOffset(580, 460),
-            Acrylic = false,
-            Theme = "Dark",
-        })
-
-        -- Create the "Main" tab
-        local Tabs = {}
-        Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
-        Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
-        
-        -- Add a new tab for Christmas
-        Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
-        
-        -- Add a new tab for Pet-Farm
-        Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
-
-        -- Add "Stamps" button under the Stamps Farm tab
-        local stampsButton = Tabs.StampsFarm:AddButton({
-            Title = "Claim Stamps", -- Added Title here
-            Callback = function()
-                -- Declare a variable to track the claim stamps process
-                local isCollectingStamps = false  -- This will track whether the collection process is active or not
-                
-                if isCollectingStamps then
-                    print("Stopping stamp collection.")
-                    -- Stop the process (if there was a running process)
-                    -- Add your logic to stop the process here
-                    isCollectingStamps = false
-                else
-                    print("Starting stamp collection.")
-                    -- Start the process (e.g., initiate the stamps collection loop)
-                    -- Add your logic to start the process here
-                    isCollectingStamps = true
-
-                    -- Example of starting a simple loop (you should adjust this to suit your collection process)
-                    while isCollectingStamps do
-                        print("Collecting stamps...")  -- Replace with actual collection logic
-                        wait(1)  -- Wait a second before trying again, adjust as needed
-                    end
-                end
-            end
-        })
-
-        -- Show the Fluent UI window
-        Window.Visible = true
-    else
-        warn("Failed to load Fluent UI!")
-    end
 end)
 
 -- Function to pop in the UI
