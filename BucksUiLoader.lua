@@ -1,17 +1,21 @@
+-- Variables for player and UI references
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Reference the original amount label in BucksIndicatorApp
-local originalAmountLabel = playerGui:WaitForChild("BucksIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
+-- Reference the original amount label
+local originalAmountLabel = playerGui:WaitForChild("AltCurrencyIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
 
--- Create the ScreenGui
+-- Reference the original timer label
+local originalTimerLabel = playerGui:WaitForChild("QuestIconApp"):WaitForChild("ImageButton"):WaitForChild("EventContainer"):WaitForChild("EventFrame"):WaitForChild("EventImageBottom"):WaitForChild("EventTime")
+
+-- Create the ScreenGui for the currency display
 local currencyUI = Instance.new("ScreenGui")
 currencyUI.Name = "CurrencyUI"
 currencyUI.Parent = playerGui
 
 -- Create the Frame for the currency display
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.3, 0, 0.15, 0)
+frame.Size = UDim2.new(0.3, 0, 0.25, 0)
 frame.Position = UDim2.new(0.5, -0.15, 0.05, 0)
 frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 frame.BackgroundTransparency = 0.2
@@ -23,30 +27,10 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0.2, 0)
 corner.Parent = frame
 
--- Create TextLabel for script owner
-local ownerLabel = Instance.new("TextLabel")
-ownerLabel.Size = UDim2.new(1, 0, 0.3, 0)
-ownerLabel.Position = UDim2.new(0, 0, 0, 0)
-ownerLabel.BackgroundTransparency = 1
-ownerLabel.TextColor3 = Color3.new(0, 0, 0)
-ownerLabel.TextScaled = true
-ownerLabel.Font = Enum.Font.SourceSansBold
-ownerLabel.TextStrokeTransparency = 0.5
-ownerLabel.Text = "Private Script Owner: made by me"
-ownerLabel.Parent = frame
-
--- Create the candy corn image
-local candyCorn = Instance.new("ImageLabel", frame)
-candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
-candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
-candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://2576547983"  -- Updated asset ID
-candyCorn.ScaleType = Enum.ScaleType.Fit
-
--- Create TextLabel for amount
+-- Create TextLabel for the currency amount
 local amountDisplay = Instance.new("TextLabel", frame)
-amountDisplay.Size = UDim2.new(0.6, 0, 0.7, 0)
-amountDisplay.Position = UDim2.new(0.3, 0, 0.2, 0)
+amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
+amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
 amountDisplay.BackgroundTransparency = 1
 amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
@@ -59,13 +43,81 @@ local function updateCurrencyAmount()
     amountDisplay.Text = originalAmountLabel.Text
 end
 
--- Connect to the changed event to update the display when the amount changes
 originalAmountLabel.Changed:Connect(updateCurrencyAmount)
-
--- Initialize the amount display
 updateCurrencyAmount()
 
--- Create the "Close" button (X)
+-- Create a label to display the timer in your custom UI
+local timerLabel = Instance.new("TextLabel", frame)
+timerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Adjust height
+timerLabel.Position = UDim2.new(0, 0, -0.4, 0) -- Move higher within the frame
+timerLabel.BackgroundTransparency = 1
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Set text color to white
+timerLabel.TextScaled = true  -- Scales the text to fit
+timerLabel.Font = Enum.Font.SourceSansBold
+timerLabel.TextStrokeTransparency = 0.5
+
+-- Set TextWrapping to false to prevent text from wrapping
+timerLabel.TextWrapped = false  -- Ensure the text does not wrap to a new line
+timerLabel.TextTruncate = Enum.TextTruncate.AtEnd  -- Truncate the text at the end if it exceeds the label width
+
+-- Set a larger TextSize to make the timer more prominent
+timerLabel.TextSize = 36  -- Make the text size larger for visibility
+
+-- Function to copy the game's timer text to your custom UI
+local function updateTimerFromGameUI()
+    if originalTimerLabel and originalTimerLabel.Text then
+        -- Extract the remaining time and format it
+        local remainingTimeText = originalTimerLabel.Text
+        local daysRemaining = string.match(remainingTimeText, "%d+")
+        if daysRemaining then
+            -- Update the timer with a custom message that includes the number of days remaining
+            timerLabel.Text = string.format("EVENT ENDS IN: %s DAYS", daysRemaining)
+        else
+            timerLabel.Text = "EVENT ENDS IN: -- DAYS"
+        end
+    end
+end
+
+-- Connect to the original timer label's Changed event to update your custom timer UI
+if originalTimerLabel then
+    originalTimerLabel.Changed:Connect(updateTimerFromGameUI)
+end
+
+-- Initial display update for the timer
+updateTimerFromGameUI()
+
+-- Add the owner label
+local ownerLabel = Instance.new("TextLabel", frame)
+ownerLabel.Size = UDim2.new(1, 0, 0.2, 0)
+ownerLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned lower in the frame
+ownerLabel.BackgroundTransparency = 1
+ownerLabel.TextColor3 = Color3.new(0, 0, 0)
+ownerLabel.TextScaled = true
+ownerLabel.Font = Enum.Font.SourceSansBold
+ownerLabel.TextStrokeTransparency = 0.5
+ownerLabel.Text = "Private Script Owner: made by me"
+
+-- Add the candy corn image
+local candyCorn = Instance.new("ImageLabel", frame)
+candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0) -- Adjust position as needed
+candyCorn.BackgroundTransparency = 1
+candyCorn.Image = "rbxassetid://5865214349"
+candyCorn.ScaleType = Enum.ScaleType.Fit
+
+-- Add the kick warning label
+local kickWarning = Instance.new("TextLabel", frame)
+kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
+kickWarning.Position = UDim2.new(0, 0, 0.85, 0) -- Positioned below the timer
+kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
+kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
+kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+kickWarning.TextScaled = true
+kickWarning.Font = Enum.Font.SourceSansBold
+kickWarning.TextStrokeTransparency = 0.5
+kickWarning.Text = "You will be kicked once the timer hits 0."
+
+-- Add the "Close" button
 local closeButtonContainer = Instance.new("Frame", frame)
 closeButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
 closeButtonContainer.Position = UDim2.new(0.9, 0, 0.25, 0)
@@ -83,14 +135,14 @@ closeButton.Text = "X"
 
 -- Hover effect for close button
 closeButton.MouseEnter:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)  -- Darker red on hover
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 end)
 
 closeButton.MouseLeave:Connect(function()
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)  -- Original color
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 58, 58)
 end)
 
--- Close button functionality with tween
+-- Close button functionality
 closeButton.MouseButton1Click:Connect(function()
     local tweenService = game:GetService("TweenService")
     local closeTween = tweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
@@ -98,14 +150,14 @@ closeButton.MouseButton1Click:Connect(function()
         Position = UDim2.new(0.5, -0.15, 0.5, -0.1)
     })
     closeTween:Play()
-    closeTween.Completed:Wait()  -- Wait for the animation to complete
-    currencyUI:Destroy()  -- Close the UI
+    closeTween.Completed:Wait()
+    currencyUI:Destroy()
 end)
 
--- Create the "Open" button
+-- Add the "Open UI" button (Beside Close Button, Right Side)
 local openButtonContainer = Instance.new("Frame", frame)
 openButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
-openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned right beside the close button
+openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned immediately beside the close button on the right
 openButtonContainer.BackgroundColor3 = Color3.fromRGB(200, 255, 200)
 openButtonContainer.BorderSizePixel = 0
 openButtonContainer.BackgroundTransparency = 0.2
@@ -115,7 +167,7 @@ openButton.Size = UDim2.new(1, 0, 1, 0)
 openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
 openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 openButton.Font = Enum.Font.SourceSansBold
-openButton.TextSize = 24
+openButton.TextSize = 24  -- Adjusted text size to 24 for better fit
 openButton.Text = "Open"
 
 -- Hover effect for open button
@@ -127,13 +179,12 @@ openButton.MouseLeave:Connect(function()
     openButton.BackgroundColor3 = Color3.fromRGB(58, 255, 58)
 end)
 
--- Open button functionality (opens the Fluent UI window or Fire Hub)
+-- Open button functionality (opens the Fluent UI window)
 openButton.MouseButton1Click:Connect(function()
     -- Load the Fluent UI library and create the window
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
     if Fluent then
-        -- Create the window
         local Window = Fluent:CreateWindow({
             Title = "Fire Hub",  
             SubTitle = "Testing UI Functionality",
@@ -146,89 +197,45 @@ openButton.MouseButton1Click:Connect(function()
         -- Create the "Main" tab
         local Tabs = {}
         Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
-        
-        -- Create the "Stamps Farm" tab
         Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
+        
+        -- Add a new tab for Christmas
+        Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
+        
+        -- Add a new tab for Pet-Farm
+        Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
 
-        -- Add the "Stamps Farm" button to the "Stamps Farm" tab
+        -- Add "Stamps" button under the Stamps Farm tab
         local stampsButton = Tabs.StampsFarm:AddButton({
-            Title = "Stamps Farm",
-            TextColor = Color3.fromRGB(0, 255, 0),  -- You can adjust the color
-            Font = Enum.Font.SourceSansBold,
-            TextSize = 20,
+            Title = "Claim Stamps", -- Added Title here
             Callback = function()
-                print("Stamps Farm Button Clicked!")
-                -- You can add your functionality for Stamps Farm here
-            end
-        })
-
-        -- Continuous claim feature for stamps
-        local isClaiming = false
-        local claimButton = Tabs.StampsFarm:AddButton({
-            Title = "Claim Stamp",
-            TextColor = Color3.fromRGB(255, 165, 0),
-            Font = Enum.Font.SourceSansBold,
-            TextSize = 20,
-            Callback = function()
-                isClaiming = not isClaiming
-                if isClaiming then
-                    claimButton.Text = "Stop Claiming"
-                    -- Start continuous claiming loop
-                    while isClaiming do
-                        print("Claiming stamp...")
-                        -- Add the function for claiming the stamp here
-                        wait(1)  -- Adjust the speed of claiming (you can change the time here)
-                    end
+                -- Declare a variable to track the claim stamps process
+                local isCollectingStamps = false  -- This will track whether the collection process is active or not
+                
+                if isCollectingStamps then
+                    print("Stopping stamp collection.")
+                    -- Stop the process (if there was a running process)
+                    -- Add your logic to stop the process here
+                    isCollectingStamps = false
                 else
-                    claimButton.Text = "Claim Stamp"
+                    print("Starting stamp collection.")
+                    -- Start the process (e.g., initiate the stamps collection loop)
+                    -- Add your logic to start the process here
+                    isCollectingStamps = true
+
+                    -- Example of starting a simple loop (you should adjust this to suit your collection process)
+                    while isCollectingStamps do
+                        print("Collecting stamps...")  -- Replace with actual collection logic
+                        wait(1)  -- Wait a second before trying again, adjust as needed
+                    end
                 end
             end
         })
 
-        -- Create the "Christmas" tab
-        Tabs.Christmas = Window:AddTab({ Title = "Christmas", Icon = "" })
-
-        -- Add the "Coming Soon" label and button to "Christmas" tab
-        local christmasLabel = Instance.new("TextLabel")
-        christmasLabel.Size = UDim2.new(1, 0, 0.3, 0)
-        christmasLabel.Position = UDim2.new(0, 0, 0.3, 0)
-        christmasLabel.BackgroundTransparency = 1
-        christmasLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-        christmasLabel.TextScaled = true
-        christmasLabel.Font = Enum.Font.SourceSansBold
-        christmasLabel.TextStrokeTransparency = 0.5
-        christmasLabel.Text = "Coming Soon"
-        christmasLabel.Parent = Tabs.Christmas
-
-        -- "Collect Gingerbread" button
-        local collectButton = Tabs.Christmas:AddButton({
-            Title = "Collect Gingerbread",
-            TextColor = Color3.fromRGB(255, 255, 0),
-            Font = Enum.Font.SourceSansBold,
-            TextSize = 20,
-            Callback = function()
-                print("Collect Gingerbread Button Clicked!")
-                -- Functionality for collecting gingerbread can go here
-            end
-        })
-
-        -- Create the "Pet Farm" tab
-        Tabs.PetFarm = Window:AddTab({ Title = "Pet Farm", Icon = "" })
-
-        -- "Coming Soon" label for Pet Farm
-        local petFarmLabel = Instance.new("TextLabel")
-        petFarmLabel.Size = UDim2.new(1, 0, 0.3, 0)
-        petFarmLabel.Position = UDim2.new(0, 0, 0.3, 0)
-        petFarmLabel.BackgroundTransparency = 1
-        petFarmLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-        petFarmLabel.TextScaled = true
-        petFarmLabel.Font = Enum.Font.SourceSansBold
-        petFarmLabel.TextStrokeTransparency = 0.5
-        petFarmLabel.Text = "Coming Soon"
-        petFarmLabel.Parent = Tabs.PetFarm
-
-        -- Show the window
+        -- Show the Fluent UI window
         Window.Visible = true
+    else
+        warn("Failed to load Fluent UI!")
     end
 end)
 
