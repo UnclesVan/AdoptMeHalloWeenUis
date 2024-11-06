@@ -183,7 +183,7 @@ end)
 openButton.MouseButton1Click:Connect(function()
     -- Load the Fluent UI library and create the window
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-    
+
     if Fluent then
         local Window = Fluent:CreateWindow({
             Title = "Fire Hub",  
@@ -199,7 +199,13 @@ openButton.MouseButton1Click:Connect(function()
         Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
         Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
         
-        -- Add "Stamps" button under the Stamps Farm tab (Make sure Title is included)
+        -- Add a new tab for Christmas
+        Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
+        
+        -- Add a new tab for Pet-Farm
+        Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
+
+        -- Add "Stamps" button under the Stamps Farm tab
         local stampsButton = Tabs.StampsFarm:AddButton({
             Title = "Collect Stamps", -- Added Title here
             Callback = function()
@@ -207,8 +213,11 @@ openButton.MouseButton1Click:Connect(function()
                 -- Place your stamps logic here, e.g. start a farm process
             end
         })
-        
+
+        -- Show the Fluent UI window
         Window.Visible = true
+    else
+        warn("Failed to load Fluent UI!")
     end
 end)
 
