@@ -115,7 +115,7 @@ kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "You will be kicked once the timer hits 0."
+kickWarning.Text = "You will be kicked from this Experience once the timer hits 0."
 
 -- Add the "Close" button
 local closeButtonContainer = Instance.new("Frame", frame)
