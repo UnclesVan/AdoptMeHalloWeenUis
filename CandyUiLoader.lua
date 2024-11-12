@@ -63,6 +63,16 @@ timerLabel.TextTruncate = Enum.TextTruncate.AtEnd  -- Truncate the text at the e
 -- Set a larger TextSize to make the timer more prominent
 timerLabel.TextSize = 36  -- Make the text size larger for visibility
 
+-- Function to check if the timer has reached zero and kick the player
+local function checkTimerAndKick()
+    local remainingTimeText = originalTimerLabel.Text
+    local daysRemaining = tonumber(string.match(remainingTimeText, "%d+"))
+
+    if daysRemaining and daysRemaining <= 0 then
+        player:Kick("You were kicked from this Experience. head to play.adoptme twitter or discord for updates on when Halloween 🎃🎃🎃🎃🎃🎃🎃 will come back the Event has ended. This script will update for Christmas ☃️☃️☃️☃️☃️☃️☃️.")
+    end
+end
+
 -- Function to copy the game's timer text to your custom UI
 local function updateTimerFromGameUI()
     if originalTimerLabel and originalTimerLabel.Text then
@@ -72,6 +82,7 @@ local function updateTimerFromGameUI()
         if daysRemaining then
             -- Update the timer with a custom message that includes the number of days remaining
             timerLabel.Text = string.format("EVENT ENDS IN: %s DAYS", daysRemaining)
+            checkTimerAndKick() -- Check for kick every time we update the timer
         else
             timerLabel.Text = "EVENT ENDS IN: -- DAYS"
         end
