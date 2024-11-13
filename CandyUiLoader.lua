@@ -224,7 +224,7 @@ closeButton.MouseButton1Click:Connect(function()
     currencyUI:Destroy()
 end)
 
--- Add the "Open UI" button beside the Close Button
+-- Add the "Open" button beside the Close Button
 local openButtonContainer = Instance.new("Frame", frame)
 openButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
 openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned immediately beside the close button on the right
@@ -252,140 +252,137 @@ end)
 -- Open button functionality (opens the Fluent UI window)
 openButton.MouseButton1Click:Connect(function()
     
-  -- Load Fluent UI
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    -- Load Fluent UI
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-if Fluent then
-    local Window = Fluent:CreateWindow({
-        Title = "Fire Hub",  
-        SubTitle = "Testing UI Functionality",
-        TabWidth = 160,
-        Size = UDim2.fromOffset(580, 460),
-        Acrylic = false,
-        Theme = "Dark",
-    })
+    if Fluent then
+        local Window = Fluent:CreateWindow({
+            Title = "Fire Hub",  
+            SubTitle = "Testing UI Functionality",
+            TabWidth = 160,
+            Size = UDim2.fromOffset(580, 460),
+            Acrylic = false,
+            Theme = "Dark",
+        })
 
-    -- Create the "Main" tab
-    local Tabs = {}
-    Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
-    Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
-    
-    -- Add a new tab for Christmas
-    Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
-    
-    -- Add a new tab for Pet-Farm
-    Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
+        -- Create the "Main" tab
+        local Tabs = {}
+        Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
+        Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
+        
+        -- Add a new tab for Christmas
+        Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
+        
+        -- Add a new tab for Pet-Farm
+        Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
 
-    -- Toggleable farming logic for Stamps
-    local farmingActive = false -- Variable to track farming state
+        -- Toggleable farming logic for Stamps
+        local farmingActive = false -- Variable to track farming state
 
-    -- Add a button to the "Stamps Farm" tab
-    local stampsButton = Tabs.StampsFarm:AddButton({
-        Title = "Collect Stamps",
-        Callback = function()
-            if farmingActive then
-                -- Stop farming
-                print("Stopping stamp collection.")
-                farmingActive = false
-            else
-                -- Start farming
-                print("Starting stamp collection.")
-                farmingActive = true
+        -- Add a button to the "Stamps Farm" tab
+        local stampsButton = Tabs.StampsFarm:AddButton({
+            Title = "Collect Stamps",
+            Callback = function()
+                if farmingActive then
+                    -- Stop farming
+                    print("Stopping stamp collection.")
+                    farmingActive = false
+                else
+                    -- Start farming
+                    print("Starting stamp collection.")
+                    farmingActive = true
 
-                -- Example farming action: simulate ongoing collection while farmingActive is true
-                while farmingActive do
-                    -- Add logic for the farming process here
-                    print("Collecting stamps...")
-                    
-                    -- Trigger the server event to claim stamps
-                    local api = game:GetService("ReplicatedStorage"):WaitForChild("API")
-                    local claimStamp = api:FindFirstChild("DdlmAPI/ClaimStamp")
-                    if claimStamp then
-                        claimStamp:FireServer()  -- Fire the claim server event
+                    -- Example farming action: simulate ongoing collection while farmingActive is true
+                    while farmingActive do
+                        -- Add logic for the farming process here
+                        print("Collecting stamps...")
+                        
+                        -- Trigger the server event to claim stamps
+                        local api = game:GetService("ReplicatedStorage"):WaitForChild("API")
+                        local claimStamp = api:FindFirstChild("DdlmAPI/ClaimStamp")
+                        if claimStamp then
+                            claimStamp:FireServer()  -- Fire the claim server event
+                        end
+
+                        wait(1)  -- Simulate the time between stamp collections
                     end
+                end
+            end
+        })
 
-                    wait(1)  -- Simulate the time between stamp collections
+        -- Create a TextLabel for the countdown timer in the Christmas tab
+        local countdownLabel = Instance.new("TextLabel")
+        countdownLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
+        countdownLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned within the Christmas tab
+        countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
+        countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
+        countdownLabel.TextScaled = true  -- Scale the text to fit
+        countdownLabel.Text = "Initializing..."  -- Initial text
+        countdownLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
+
+        -- Create another TextLabel for the current date and year
+        local dateLabel = Instance.new("TextLabel")
+        dateLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
+        dateLabel.Position = UDim2.new(0, 0, 0.5, 0) -- Positioned below the countdown label
+        dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
+        dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
+        dateLabel.TextScaled = true  -- Scale the text to fit
+        dateLabel.Text = "Current Date: Initializing..."  -- Initial text
+        dateLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
+
+        -- Create a button for collecting gingerbread (initially hidden)
+        local collectGingerbreadButton
+
+        -- Function to update the countdown label and date label
+        local function updateChristmasCountdown()
+            local currentTime = os.time()
+            local christmasTime = os.time({year = 2024, month = 12, day = 25, hour = 0, min = 0, sec = 0})
+
+            -- Get the current date and format it
+            local currentDate = os.date("%B %d, %Y", currentTime)
+            dateLabel.Text = "Current Date: " .. currentDate
+
+            -- Check if the current date is before Christmas
+            if currentTime < christmasTime then
+                local timeLeft = christmasTime - currentTime
+                local days = math.floor(timeLeft / 86400)
+                local hours = math.floor((timeLeft % 86400) / 3600)
+                local minutes = math.floor((timeLeft % 3600) / 60)
+                local seconds = timeLeft % 60
+
+                countdownLabel.Text = string.format("TIME UNTIL CHRISTMAS: %02d DAYS %02d HOURS %02d MINUTES %02d SECONDS", days, hours, minutes, seconds)
+            elseif currentTime >= christmasTime then
+                -- Hide the labels
+                countdownLabel.Visible = false
+                dateLabel.Visible = false
+
+                -- Create the Collect Gingerbread button if it doesn't exist
+                if not collectGingerbreadButton then
+                    collectGingerbreadButton = Tabs.Christmas:AddButton({
+                        Title = "Collect Gingerbread",
+                        Callback = function()
+                            print("Collecting Gingerbread!")
+                            -- Add the logic to collect gingerbread here
+                        end
+                    })
                 end
             end
         end
-    })
 
-    -- Create a TextLabel for the countdown timer in the Christmas tab
-    local countdownLabel = Instance.new("TextLabel")
-    countdownLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-    countdownLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned within the Christmas tab
-    countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
-    countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
-    countdownLabel.TextScaled = true  -- Scale the text to fit
-    countdownLabel.Text = "Initializing..."  -- Initial text
-    countdownLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
-
-    -- Create another TextLabel for the current date and year
-    local dateLabel = Instance.new("TextLabel")
-    dateLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-    dateLabel.Position = UDim2.new(0, 0, 0.5, 0) -- Positioned below the countdown label
-    dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
-    dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
-    dateLabel.TextScaled = true  -- Scale the text to fit
-    dateLabel.Text = "Current Date: Initializing..."  -- Initial text
-    dateLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
-
-    -- Create a button for collecting gingerbread (initially hidden)
-    local collectGingerbreadButton
-
-    -- Function to update the countdown label and date label
-    local function updateChristmasCountdown()
-        local currentTime = os.time()
-        local christmasTime = os.time({year = 2024, month = 12, day = 25, hour = 0, min = 0, sec = 0})
-
-        -- Get the current date and format it
-        local currentDate = os.date("%B %d, %Y", currentTime)
-        dateLabel.Text = "Current Date: " .. currentDate
-
-        -- Check if the current date is December 25
-        if currentTime < christmasTime then
-            local timeLeft = christmasTime - currentTime
-            local days = math.floor(timeLeft / 86400)
-            local hours = math.floor((timeLeft % 86400) / 3600)
-            local minutes = math.floor((timeLeft % 3600) / 60)
-            local seconds = timeLeft % 60
-
-            countdownLabel.Text = string.format("TIME UNTIL CHRISTMAS: %02d DAYS %02d HOURS %02d MINUTES %02d SECONDS", days, hours, minutes, seconds)
-        elseif currentTime >= christmasTime then
-            -- Hide the labels
-            countdownLabel.Visible = false
-            dateLabel.Visible = false
-
-            -- Create the Collect Gingerbread button if it doesn't exist
-            if not collectGingerbreadButton then
-                collectGingerbreadButton = Tabs.Christmas:AddButton({
-                    Title = "Collect Gingerbread",
-                    Callback = function()
-                        print("Collecting Gingerbread!")
-                        -- Add the logic to collect gingerbread here
-                    end
-                })
+        -- Update the countdown and date every second in a coroutine
+        coroutine.wrap(function()
+            while true do
+                updateChristmasCountdown()
+                wait(1)
             end
-        end
+        end)()
+
+        -- Show the Fluent UI window
+        Window.Visible = true
+    else
+        warn("Failed to load Fluent UI!")
     end
-
-    -- Update the countdown and date every second in a coroutine
-    coroutine.wrap(function()
-        while true do
-            updateChristmasCountdown()
-            wait(1)
-        end
-    end)()
-
-    -- Show the Fluent UI window
-    Window.Visible = true
-else
-    warn("Failed to load Fluent UI!")
-end
 end)
-
-
-
 
 -- Function to pop in the UI
 local function popInUI()
