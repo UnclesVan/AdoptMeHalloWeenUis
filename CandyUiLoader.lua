@@ -2,10 +2,10 @@
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Reference the original amount label
+-- Reference to the original amount label
 local originalAmountLabel = playerGui:WaitForChild("AltCurrencyIndicatorApp"):WaitForChild("CurrencyIndicator"):WaitForChild("Container"):WaitForChild("Amount")
 
--- Reference the original timer label
+-- Reference to the original timer label
 local originalTimerLabel = playerGui:WaitForChild("QuestIconApp"):WaitForChild("ImageButton"):WaitForChild("EventContainer"):WaitForChild("EventFrame"):WaitForChild("EventImageBottom"):WaitForChild("EventTime")
 
 -- Create the ScreenGui for the currency display
@@ -61,36 +61,49 @@ timerLabel.TextSize = 37  -- Make the text size larger for visibility
 
 -- Function to check if the timer has reached zero and kick the player
 local function checkTimerAndKick()
-    local remainingTimeText = originalTimerLabel.Text
-    local daysRemaining = tonumber(string.match(remainingTimeText, "%d+"))
-
-    if daysRemaining and daysRemaining <= 0 then
-        player:Kick("You were kicked from this Experience. Head to play.adoptme twitter or discord for updates on when Halloween 🎃🎃🎃🎃🎃🎃🎃 will come back. The event has ended. This script will update for Christmas ☃️☃️☃️☃️☃️☃️☃️.")
+    if originalTimerLabel and originalTimerLabel.Text then
+        local daysRemaining = tonumber(string.match(originalTimerLabel.Text, "%d+"))
+        if daysRemaining and daysRemaining <= 0 then
+            player:Kick("You were kicked from this Experience. The event has ended. Please check for updates.")
+        end
     end
 end
 
--- Function to copy the game's timer text to your custom UI
+-- Function to update the timer label
 local function updateTimerFromGameUI()
     if originalTimerLabel and originalTimerLabel.Text then
-        -- Extract the remaining days, hours, and seconds
+        -- Extract the remaining time components
         local remainingTimeText = originalTimerLabel.Text
-        local daysRemaining = string.match(remainingTimeText, "%d+")
-        local hoursRemaining = string.match(remainingTimeText, "(%d+)%s+HOURS") -- Extracting hours
-        local secondsRemaining = string.match(remainingTimeText, "%d+%s+SECONDS") -- Extracting seconds, if displayed
+        local daysRemaining = string.match(remainingTimeText, "(%d+)%s+DAYS") or "0" -- Default to "0" if nil
+        local hoursRemaining = string.match(remainingTimeText, "(%d+)%s+HOURS") or "0"
+        local secondsRemaining = string.match(remainingTimeText, "(%d+)%s+SECONDS") or "0"
 
-        if daysRemaining and hoursRemaining then
-            -- Update the timer with a custom message that includes the number of days, hours, and seconds remaining
-            timerLabel.Text = string.format("EVENT ENDS IN: %s DAYS %s HOURS", daysRemaining, hoursRemaining)
+        -- Update the timer label based on available values
+        local timerComponents = {}
 
-            -- Check if seconds are available
-            if secondsRemaining then
-                timerLabel.Text = string.format("EVENT ENDS IN: %s DAYS %s HOURS %s SECONDS", daysRemaining, hoursRemaining, secondsRemaining)
-            end
-
-            checkTimerAndKick() -- Check for kick every time we update the timer
-        else
-            timerLabel.Text = "EVENT ENDS IN: -- DAYS -- HOURS"
+        if hoursRemaining ~= "0" then
+            table.insert(timerComponents, string.format("%s HOURS", hoursRemaining))
         end
+
+        if daysRemaining ~= "0" then
+            table.insert(timerComponents, string.format("%s DAYS", daysRemaining))
+        end
+
+        if secondsRemaining ~= "0" then
+            table.insert(timerComponents, string.format("%s SECONDS", secondsRemaining))
+        end
+
+        local timerText = "EVENT ENDS IN:"
+        if #timerComponents > 0 then
+            timerText = timerText .. " " .. table.concat(timerComponents, " ")
+        else
+            timerText = timerText .. " TIME NOT AVAILABLE"
+        end
+
+        timerLabel.Text = timerText
+
+        -- Check if the timer has run out
+        checkTimerAndKick()
     end
 end
 
@@ -135,9 +148,9 @@ kickWarning.Text = "You will be kicked from this Experience once the timer hits 
 
 -- Create new TextLabels for time until Christmas and the current date
 local timeUntilChristmasLabel = Instance.new("TextLabel", frame)
-timeUntilChristmasLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Size for clarity
+timeUntilChristmasLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Clarity
 timeUntilChristmasLabel.Position = UDim2.new(0, 0, 1.05, 0) -- Adjusted position lower
-timeUntilChristmasLabel.BackgroundTransparency = 1 -- Making background fully transparent
+timeUntilChristmasLabel.BackgroundTransparency = 1 -- Fully transparent
 timeUntilChristmasLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 timeUntilChristmasLabel.TextScaled = true
 timeUntilChristmasLabel.Font = Enum.Font.SourceSansBold
@@ -145,7 +158,7 @@ timeUntilChristmasLabel.TextStrokeTransparency = 0.5
 timeUntilChristmasLabel.Text = "TIME UNTIL CHRISTMAS: 00 DAYS 00 HOURS 00 MINUTES 00 SECONDS"
 
 local currentDateLabel = Instance.new("TextLabel", frame)
-currentDateLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Size for clarity
+currentDateLabel.Size = UDim2.new(1, 0, 0.2, 0)
 currentDateLabel.Position = UDim2.new(0, 0, 1.25, 0) -- Adjusted position lower
 currentDateLabel.BackgroundTransparency = 1 -- Making background fully transparent
 currentDateLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -329,9 +342,6 @@ openButton.MouseButton1Click:Connect(function()
         dateLabel.TextScaled = true  -- Scale the text to fit
         dateLabel.Text = "Current Date: Initializing..."  -- Initial text
         dateLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
-
-        -- Create a button for collecting gingerbread (initially hidden)
-        local collectGingerbreadButton
 
         -- Function to update the countdown label and date label
         local function updateChristmasCountdown()
