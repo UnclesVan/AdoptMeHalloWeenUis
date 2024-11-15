@@ -46,25 +46,38 @@ end
 originalAmountLabel.Changed:Connect(updateCurrencyAmount)
 updateCurrencyAmount()
 
--- Create a label to display the timer in your custom UI
+-- Create a label to display the timer
 local timerLabel = Instance.new("TextLabel", frame)
-timerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Adjust height
-timerLabel.Position = UDim2.new(0, 0, -0.4, 0) -- Move higher within the frame
+timerLabel.Size = UDim2.new(1, 0, 0.3, 0)
+timerLabel.Position = UDim2.new(0, 0, -0.4, 0)
 timerLabel.BackgroundTransparency = 1
-timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Set text color to white
-timerLabel.TextScaled = false  -- Scales the text to fit
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timerLabel.TextScaled = false
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
-timerLabel.TextWrapped = false  -- Ensure the text does not wrap to a new line
-timerLabel.TextTruncate = Enum.TextTruncate.AtEnd  -- Truncate the text at the end if it exceeds the label width
-timerLabel.TextSize = 37  -- Make the text size larger for visibility
+timerLabel.TextTruncate = Enum.TextTruncate.AtEnd
+timerLabel.TextSize = 37
+
+-- Create an event over label
+local eventOverLabel = Instance.new("TextLabel", frame)
+eventOverLabel.Size = UDim2.new(1, 0, 0.2, 0)
+eventOverLabel.Position = UDim2.new(0, 0, 0.75, 0) 
+eventOverLabel.BackgroundTransparency = 1
+eventOverLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+eventOverLabel.TextScaled = true
+eventOverLabel.Font = Enum.Font.SourceSansBold
+eventOverLabel.TextStrokeTransparency = 0.5
+eventOverLabel.Text = ""
+eventOverLabel.Visible = false  -- Hidden by default
 
 -- Function to check if the timer has reached zero and kick the player
 local function checkTimerAndKick()
     if originalTimerLabel and originalTimerLabel.Text then
-        local daysRemaining = tonumber(string.match(originalTimerLabel.Text, "%d+"))
-        if daysRemaining and daysRemaining <= 0 then
+        local daysRemaining = tonumber(string.match(originalTimerLabel.Text, "%d+")) or 0
+        if daysRemaining <= 0 then
             player:Kick("You were kicked from this Experience. The event has ended. Please check for updates.")
+            eventOverLabel.Text = "EVENT IS OVER"  -- Update the event over label
+            eventOverLabel.Visible = true  -- Show the label
         end
     end
 end
@@ -72,13 +85,11 @@ end
 -- Function to update the timer label
 local function updateTimerFromGameUI()
     if originalTimerLabel and originalTimerLabel.Text then
-        -- Extract the remaining time components
         local remainingTimeText = originalTimerLabel.Text
-        local daysRemaining = string.match(remainingTimeText, "(%d+)%s+DAYS") or "0" -- Default to "0" if nil
+        local daysRemaining = string.match(remainingTimeText, "(%d+)%s+DAYS") or "0"
         local hoursRemaining = string.match(remainingTimeText, "(%d+)%s+HOURS") or "0"
         local secondsRemaining = string.match(remainingTimeText, "(%d+)%s+SECONDS") or "0"
 
-        -- Update the timer label based on available values
         local timerComponents = {}
 
         if hoursRemaining ~= "0" then
@@ -101,13 +112,11 @@ local function updateTimerFromGameUI()
         end
 
         timerLabel.Text = timerText
-
-        -- Check if the timer has run out
         checkTimerAndKick()
     end
 end
 
--- Connect to the original timer label's Changed event to update your custom timer UI
+-- Connect to the original timer label's Changed event
 if originalTimerLabel then
     originalTimerLabel.Changed:Connect(updateTimerFromGameUI)
 end
@@ -118,7 +127,7 @@ updateTimerFromGameUI()
 -- Add the owner label
 local ownerLabel = Instance.new("TextLabel", frame)
 ownerLabel.Size = UDim2.new(1, 0, 0.2, 0)
-ownerLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned lower in the frame
+ownerLabel.Position = UDim2.new(0, 0, 0.1, 0)
 ownerLabel.BackgroundTransparency = 1
 ownerLabel.TextColor3 = Color3.new(0, 0, 0)
 ownerLabel.TextScaled = true
@@ -129,7 +138,7 @@ ownerLabel.Text = "Private Script Owner: made by me"
 -- Add the candy corn image
 local candyCorn = Instance.new("ImageLabel", frame)
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
-candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0) -- Adjust position as needed
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
 candyCorn.BackgroundTransparency = 1
 candyCorn.Image = "rbxassetid://5865214349"
 candyCorn.ScaleType = Enum.ScaleType.Fit
@@ -137,10 +146,10 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 -- Add the kick warning label
 local kickWarning = Instance.new("TextLabel", frame)
 kickWarning.Size = UDim2.new(1, 0, 0.2, 0)
-kickWarning.Position = UDim2.new(0, 0, 0.85, 0) -- Positioned below the timer
-kickWarning.BackgroundTransparency = 0.5 -- Slightly transparent background
-kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red background
-kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+kickWarning.Position = UDim2.new(0, 0, 0.85, 0)
+kickWarning.BackgroundTransparency = 0.5
+kickWarning.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255)
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
@@ -148,9 +157,9 @@ kickWarning.Text = "You will be kicked from this Experience once the timer hits 
 
 -- Create new TextLabels for time until Christmas and the current date
 local timeUntilChristmasLabel = Instance.new("TextLabel", frame)
-timeUntilChristmasLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Clarity
-timeUntilChristmasLabel.Position = UDim2.new(0, 0, 1.05, 0) -- Adjusted position lower
-timeUntilChristmasLabel.BackgroundTransparency = 1 -- Fully transparent
+timeUntilChristmasLabel.Size = UDim2.new(1, 0, 0.2, 0)
+timeUntilChristmasLabel.Position = UDim2.new(0, 0, 1.05, 0)
+timeUntilChristmasLabel.BackgroundTransparency = 1
 timeUntilChristmasLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 timeUntilChristmasLabel.TextScaled = true
 timeUntilChristmasLabel.Font = Enum.Font.SourceSansBold
@@ -159,17 +168,32 @@ timeUntilChristmasLabel.Text = "TIME UNTIL CHRISTMAS: 00 DAYS 00 HOURS 00 MINUTE
 
 local currentDateLabel = Instance.new("TextLabel", frame)
 currentDateLabel.Size = UDim2.new(1, 0, 0.2, 0)
-currentDateLabel.Position = UDim2.new(0, 0, 1.25, 0) -- Adjusted position lower
-currentDateLabel.BackgroundTransparency = 1 -- Making background fully transparent
+currentDateLabel.Position = UDim2.new(0, 0, 1.25, 0)
+currentDateLabel.BackgroundTransparency = 1
 currentDateLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 currentDateLabel.TextScaled = true
 currentDateLabel.Font = Enum.Font.SourceSansBold
 currentDateLabel.TextStrokeTransparency = 0.5
 currentDateLabel.Text = "Current Date: YYYY-MM-DD"
 
+-- Function to get current Australian time considering DST
+local function getCurrentAustralianTime()
+    local utcOffset = 10 * 3600 -- Default to UTC+10 (AEST)
+    
+    -- Check if it's currently Daylight Saving Time (DST)
+    local month = os.date("*t").month
+    if month >= 10 or month <= 4 then
+        utcOffset = 10 * 3600 -- AEST
+    else
+        utcOffset = 11 * 3600 -- AEDT
+    end
+
+    return os.time() + utcOffset
+end
+
 -- Function to update the countdown label and date label
 local function updateChristmasCountdown()
-    local currentTime = os.time()
+    local currentTime = getCurrentAustralianTime()
     local christmasTime = os.time({year = 2024, month = 12, day = 25, hour = 0, min = 0, sec = 0})
 
     -- Get the current date and format it
@@ -186,7 +210,6 @@ local function updateChristmasCountdown()
 
         timeUntilChristmasLabel.Text = string.format("TIME UNTIL CHRISTMAS: %02d DAYS %02d HOURS %02d MINUTES %02d SECONDS", days, hours, minutes, seconds)
     else
-        -- Hide the labels if the Christmas countdown is finished
         timeUntilChristmasLabel.Visible = false
         currentDateLabel.Visible = false
     end
@@ -240,7 +263,7 @@ end)
 -- Add the "Open" button beside the Close Button
 local openButtonContainer = Instance.new("Frame", frame)
 openButtonContainer.Size = UDim2.new(0.1, 0, 0.5, 0)
-openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)  -- Positioned immediately beside the close button on the right
+openButtonContainer.Position = UDim2.new(1, -0.1, 0.25, 0)
 openButtonContainer.BackgroundColor3 = Color3.fromRGB(200, 255, 200)
 openButtonContainer.BorderSizePixel = 0
 openButtonContainer.BackgroundTransparency = 0.2
@@ -264,7 +287,6 @@ end)
 
 -- Open button functionality (opens the Fluent UI window)
 openButton.MouseButton1Click:Connect(function()
-    
     -- Load Fluent UI
     local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
@@ -285,7 +307,7 @@ openButton.MouseButton1Click:Connect(function()
         
         -- Add a new tab for Christmas
         Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
-        
+
         -- Add a new tab for Pet-Farm
         Tabs.PetFarm = Window:AddTab({ Title = "Pet-Farm: Coming Soon", Icon = "" })
 
@@ -309,7 +331,7 @@ openButton.MouseButton1Click:Connect(function()
                     while farmingActive do
                         -- Add logic for the farming process here
                         print("Collecting stamps...")
-                        
+
                         -- Trigger the server event to claim stamps
                         local api = game:GetService("ReplicatedStorage"):WaitForChild("API")
                         local claimStamp = api:FindFirstChild("DdlmAPI/ClaimStamp")
@@ -324,28 +346,24 @@ openButton.MouseButton1Click:Connect(function()
         })
 
         -- Create a TextLabel for the countdown timer in the Christmas tab
-        local countdownLabel = Instance.new("TextLabel")
+        local countdownLabel = Instance.new("TextLabel", Tabs.Christmas.Container)
         countdownLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-        countdownLabel.Position = UDim2.new(0, 0, 0.1, 0) -- Positioned within the Christmas tab
-        countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
-        countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
+        countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color
+        countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color
         countdownLabel.TextScaled = true  -- Scale the text to fit
         countdownLabel.Text = "Initializing..."  -- Initial text
-        countdownLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
 
         -- Create another TextLabel for the current date and year
-        local dateLabel = Instance.new("TextLabel")
+        local dateLabel = Instance.new("TextLabel", Tabs.Christmas.Container)
         dateLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-        dateLabel.Position = UDim2.new(0, 0, 0.5, 0) -- Positioned below the countdown label
-        dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color inspired by Fluent UI
-        dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color for visibility
+        dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color
+        dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color
         dateLabel.TextScaled = true  -- Scale the text to fit
         dateLabel.Text = "Current Date: Initializing..."  -- Initial text
-        dateLabel.Parent = Tabs.Christmas.Container  -- Parent it to the Christmas tab's container
 
         -- Function to update the countdown label and date label
         local function updateChristmasCountdown()
-            local currentTime = os.time()
+            local currentTime = getCurrentAustralianTime()
             local christmasTime = os.time({year = 2024, month = 12, day = 25, hour = 0, min = 0, sec = 0})
 
             -- Get the current date and format it
@@ -362,20 +380,9 @@ openButton.MouseButton1Click:Connect(function()
 
                 countdownLabel.Text = string.format("TIME UNTIL CHRISTMAS: %02d DAYS %02d HOURS %02d MINUTES %02d SECONDS", days, hours, minutes, seconds)
             elseif currentTime >= christmasTime then
-                -- Hide the labels
                 countdownLabel.Visible = false
                 dateLabel.Visible = false
-
-                -- Create the Collect Gingerbread button if it doesn't exist
-                if not collectGingerbreadButton then
-                    collectGingerbreadButton = Tabs.Christmas:AddButton({
-                        Title = "Collect Gingerbread",
-                        Callback = function()
-                            print("Collecting Gingerbread!")
-                            -- Add the logic to collect gingerbread here
-                        end
-                    })
-                end
+                -- Add logic for what happens after Christmas (e.g., a button to collect rewards)
             end
         end
 
