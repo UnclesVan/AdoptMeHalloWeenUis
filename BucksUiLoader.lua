@@ -156,7 +156,6 @@ frame.MouseLeave:Connect(function()
 end)
 
 
-wait(1)
 
 -- Get the Player
 local player = game.Players.LocalPlayer
