@@ -1,3 +1,113 @@
+-- Get the Player
+local player = game.Players.LocalPlayer
+
+-- Define the path to the Scroll element
+local scrollContainer = player:WaitForChild("PlayerGui"):WaitForChild("BackpackApp"):WaitForChild("Tooltip"):WaitForChild("List"):WaitForChild("description"):WaitForChild("Scroll")
+
+-- Create ScreenGui to hold the UI elements
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player.PlayerGui
+
+-- Create a Frame to hold the UI elements with rounded edges
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.35, 0, 0.25, 0) -- Slightly smaller size for the original frame
+frame.Position = UDim2.new(0.02, 0, 0.6, 0) -- Position higher on the screen
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Background color
+frame.BorderSizePixel = 0 -- No border
+frame.Parent = screenGui
+
+-- Create UIAspectRatioConstraint for maintaining aspect ratio (optional)
+local aspectRatio = Instance.new("UIAspectRatioConstraint")
+aspectRatio.Parent = frame
+
+-- Create a UICorner to round the edges
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 10) -- Rounded corners with a radius of 10 pixels
+uiCorner.Parent = frame
+
+-- Create an ImageLabel for the stack count icon
+local icon = Instance.new("ImageLabel")
+icon.Size = UDim2.new(0.1, 0, 0.1, 0) -- Size of the icon
+icon.Position = UDim2.new(0.02, 0, 0.2, 0) -- Position within the frame
+icon.Image = "rbxassetid://13619902566" -- Image asset ID
+icon.BackgroundTransparency = 1 -- Transparent background
+icon.Parent = frame
+
+-- Create a TextLabel to display stack count
+local stackCountLabel = Instance.new("TextLabel")
+stackCountLabel.Size = UDim2.new(0.88, 0, 1, 0) -- Adjust width to make room for icon
+stackCountLabel.Position = UDim2.new(0.12, 0, 0, 0) -- Position next to the icon
+stackCountLabel.BackgroundTransparency = 1 -- Transparent background
+stackCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+stackCountLabel.TextScaled = true -- Scale text to fit
+stackCountLabel.Text = "Stack Count: 0" -- Initial text
+stackCountLabel.Parent = frame
+
+-- Animate function for the hover effect
+local function onHover()
+    frame:TweenSize(UDim2.new(0.4, 0, 0.3, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true) -- Slightly larger on hover
+end
+
+local function onUnhover()
+    frame:TweenSize(UDim2.new(0.35, 0, 0.25, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true) -- Revert to original size
+end
+
+-- Connect Mouse Enter and Leave events for hover effect
+frame.MouseEnter:Connect(onHover)
+frame.MouseLeave:Connect(onUnhover)
+
+-- Function to scan for 'Stack Count' in the Scroll container
+local function updateStackCount()
+    local stackCount = 0
+
+    -- Iterate over all children in the Scroll container
+    for _, child in ipairs(scrollContainer:GetChildren()) do
+        if child:IsA("TextLabel") then
+            local text = child.Text
+            local currentCount = text:match("Stack Count:%s*(%d+)")  -- Pattern to find Stack Count
+            
+            if currentCount then
+                stackCount = math.max(stackCount, tonumber(currentCount)) -- Keep highest count
+            end
+        end
+    end
+
+    -- Update the displayed stack count
+    stackCountLabel.Text = "Stack Count: " .. tostring(stackCount)
+end
+
+-- Connect to an event that detects changes in the Scroll container
+scrollContainer.ChildAdded:Connect(updateStackCount)
+scrollContainer.ChildRemoved:Connect(updateStackCount)
+
+-- Optional: Detect text changes in existing TextLabels
+for _, child in ipairs(scrollContainer:GetChildren()) do
+    if child:IsA("TextLabel") then
+        child:GetPropertyChangedSignal("Text"):Connect(updateStackCount) -- Connect to detect text changes
+    end
+end
+
+-- Connect new child's text change event
+scrollContainer.ChildAdded:Connect(function(child)
+    if child:IsA("TextLabel") then
+        child:GetPropertyChangedSignal("Text"):Connect(updateStackCount)
+    end
+end)
+
+-- Initial update to set the count when the script runs
+updateStackCount()
+
+-- Optional: Update periodically (every 1 second) if items can change rapidly
+while wait(1) do
+    updateStackCount() -- Only if necessary, to ensure count remains accurate
+end
+
+
+
+
+
+
+
 -- Variables for player and UI references
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
