@@ -161,6 +161,7 @@ print'3'
 print'2'
 print'1'
 print"0, stack gui has loaded."
+
 -- Get the Player
 local player = game.Players.LocalPlayer
 
@@ -192,18 +193,18 @@ uiCorner.Parent = frame
 local icon = Instance.new("ImageLabel")
 icon.Size = UDim2.new(0.1, 0, 0.1, 0) -- Size of the icon
 icon.Position = UDim2.new(0.02, 0, 0.2, 0) -- Position within the frame
-icon.Image = "rbxassetid://13619902566" -- Image asset ID
+icon.Image = "rbxassetid://13619902566" -- Image asset ID (replace with your image ID)
 icon.BackgroundTransparency = 1 -- Transparent background
 icon.Parent = frame
 
--- Create a TextLabel to display stack count
+-- Create a TextLabel to display stack counts
 local stackCountLabel = Instance.new("TextLabel")
 stackCountLabel.Size = UDim2.new(0.88, 0, 1, 0) -- Adjust width to make room for icon
 stackCountLabel.Position = UDim2.new(0.12, 0, 0, 0) -- Position next to the icon
 stackCountLabel.BackgroundTransparency = 1 -- Transparent background
 stackCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
 stackCountLabel.TextScaled = true -- Scale text to fit
-stackCountLabel.Text = "Stack Count: 0" -- Initial text
+stackCountLabel.Text = "Stack Counts: " -- Initial text
 stackCountLabel.Parent = frame
 
 -- Animate function for the hover effect
@@ -221,7 +222,7 @@ frame.MouseLeave:Connect(onUnhover)
 
 -- Function to scan for 'Stack Count' in the Scroll container
 local function updateStackCount()
-    local stackCount = 0
+    local stackCounts = {}
 
     -- Iterate over all children in the Scroll container
     for _, child in ipairs(scrollContainer:GetChildren()) do
@@ -230,13 +231,29 @@ local function updateStackCount()
             local currentCount = text:match("Stack Count:%s*(%d+)")  -- Pattern to find Stack Count
             
             if currentCount then
-                stackCount = math.max(stackCount, tonumber(currentCount)) -- Keep highest count
+                table.insert(stackCounts, tonumber(currentCount)) -- Add the count to the list
             end
         end
     end
 
+    -- Sort the stack counts from lowest to highest
+    table.sort(stackCounts)
+
+    -- Format the output string
+    local stackCountText = "Stack Counts: "
+    for _, count in ipairs(stackCounts) do
+        stackCountText = stackCountText .. tostring(count) .. ", "
+    end
+
+    -- Remove the last comma and space, if there were any counts
+    if #stackCounts > 0 then
+        stackCountText = stackCountText:sub(1, -3) -- Remove the last ", "
+    else
+        stackCountText = stackCountText .. "None"
+    end
+
     -- Update the displayed stack count
-    stackCountLabel.Text = "Stack Count: " .. tostring(stackCount)
+    stackCountLabel.Text = stackCountText
 end
 
 -- Connect to an event that detects changes in the Scroll container
@@ -264,9 +281,6 @@ updateStackCount()
 while wait(1) do
     updateStackCount() -- Only if necessary, to ensure count remains accurate
 end
-
-
-
 
 
 
