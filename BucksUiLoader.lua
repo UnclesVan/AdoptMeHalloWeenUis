@@ -160,7 +160,7 @@ print'4'
 print'3'
 print'2'
 print'1'
-print("0, stack gui has loaded.")
+print"0, stack gui has loaded."
 -- Get the Player
 local player = game.Players.LocalPlayer
 
