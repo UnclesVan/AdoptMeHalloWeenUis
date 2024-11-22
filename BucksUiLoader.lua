@@ -165,125 +165,139 @@ print"0, stack gui has loaded."
 -- Get the Player
 local player = game.Players.LocalPlayer
 
--- Define the path to the Scroll element
+-- Define the paths to the Scroll elements
 local scrollContainer = player:WaitForChild("PlayerGui"):WaitForChild("BackpackApp"):WaitForChild("Tooltip"):WaitForChild("List"):WaitForChild("description"):WaitForChild("Scroll")
+local backpackStackCountPath = player:WaitForChild("PlayerGui"):WaitForChild("BackpackApp").Frame.Body.ScrollComplex.ScrollingFrame.Content.food.Row0["2_ec2e53ab06e64eeabbe11911c68f6b69"].Button.StackCount.TextLabel
 
 -- Create ScreenGui to hold the UI elements
 local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = player.PlayerGui
 
--- Create a Frame to hold the UI elements with rounded edges
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.35, 0, 0.25, 0) -- Slightly smaller size for the original frame
-frame.Position = UDim2.new(0.02, 0, 0.6, 0) -- Position higher on the screen
-frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Background color
-frame.BorderSizePixel = 0 -- No border
-frame.Parent = screenGui
+-- Function to create a stack count frame
+local function createStackCountFrame(position, labelText, isBackpack)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.35, 0, 0.25, 0) -- Size of the frame
+    frame.Position = position
+    frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
 
--- Create UIAspectRatioConstraint for maintaining aspect ratio (optional)
-local aspectRatio = Instance.new("UIAspectRatioConstraint")
-aspectRatio.Parent = frame
+    local aspectRatio = Instance.new("UIAspectRatioConstraint")
+    aspectRatio.Parent = frame
 
--- Create a UICorner to round the edges
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10) -- Rounded corners with a radius of 10 pixels
-uiCorner.Parent = frame
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = frame
 
--- Create an ImageLabel for the stack count icon
-local icon = Instance.new("ImageLabel")
-icon.Size = UDim2.new(0.1, 0, 0.1, 0) -- Size of the icon
-icon.Position = UDim2.new(0.02, 0, 0.2, 0) -- Position within the frame
-icon.Image = "rbxassetid://13619902566" -- Image asset ID (replace with your image ID)
-icon.BackgroundTransparency = 1 -- Transparent background
-icon.Parent = frame
+    local icon = Instance.new("ImageLabel")
+    icon.Size = UDim2.new(0.1, 0, 0.1, 0)
+    icon.Position = UDim2.new(0.02, 0, 0.2, 0)
+    icon.Image = "rbxassetid://13619902566" -- Example icon, replace as needed
+    icon.BackgroundTransparency = 1
+    icon.Parent = frame
 
--- Create a TextLabel to display stack counts
-local stackCountLabel = Instance.new("TextLabel")
-stackCountLabel.Size = UDim2.new(0.88, 0, 1, 0) -- Adjust width to make room for icon
-stackCountLabel.Position = UDim2.new(0.12, 0, 0, 0) -- Position next to the icon
-stackCountLabel.BackgroundTransparency = 1 -- Transparent background
-stackCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-stackCountLabel.TextScaled = true -- Scale text to fit
-stackCountLabel.Text = "Stack Counts: " -- Initial text
-stackCountLabel.Parent = frame
+    local stackCountLabel = Instance.new("TextLabel")
+    stackCountLabel.Size = UDim2.new(0.88, 0, 1, 0)
+    stackCountLabel.Position = UDim2.new(0.12, 0, 0, 0)
+    stackCountLabel.BackgroundTransparency = 1
+    stackCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    stackCountLabel.TextScaled = true
+    stackCountLabel.Text = labelText
+    stackCountLabel.Parent = frame
 
--- Animate function for the hover effect
-local function onHover()
-    frame:TweenSize(UDim2.new(0.4, 0, 0.3, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true) -- Slightly larger on hover
-end
+    local function onHover()
+        frame:TweenSize(UDim2.new(0.4, 0, 0.3, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
+    end
 
-local function onUnhover()
-    frame:TweenSize(UDim2.new(0.35, 0, 0.25, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true) -- Revert to original size
-end
+    local function onUnhover()
+        frame:TweenSize(UDim2.new(0.35, 0, 0.25, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
+    end
 
--- Connect Mouse Enter and Leave events for hover effect
-frame.MouseEnter:Connect(onHover)
-frame.MouseLeave:Connect(onUnhover)
+    frame.MouseEnter:Connect(onHover)
+    frame.MouseLeave:Connect(onUnhover)
 
--- Function to scan for 'Stack Count' in the Scroll container
-local function updateStackCount()
-    local stackCounts = {}
+    -- Original stack count logic for the first frame
+    if not isBackpack then
+        local function updateStackCount()
+            local stackCounts = {}
 
-    -- Iterate over all children in the Scroll container
-    for _, child in ipairs(scrollContainer:GetChildren()) do
-        if child:IsA("TextLabel") then
-            local text = child.Text
-            local currentCount = text:match("Stack Count:%s*(%d+)")  -- Pattern to find Stack Count
-            
-            if currentCount then
-                table.insert(stackCounts, tonumber(currentCount)) -- Add the count to the list
+            -- Iterate over all children in the Scroll container
+            for _, child in ipairs(scrollContainer:GetChildren()) do
+                if child:IsA("TextLabel") then
+                    local text = child.Text
+                    local currentCount = text:match("Stack Count:%s*(%d+)")
+                    if currentCount then
+                        table.insert(stackCounts, tonumber(currentCount))
+                    end
+                end
+            end
+
+            -- Update the displayed stack counts for "Stack Counts"
+            local stackCountText = labelText .. ": "
+            for _, count in ipairs(stackCounts) do
+                stackCountText = stackCountText .. tostring(count) .. ", "
+            end
+
+            if #stackCounts > 0 then
+                stackCountText = stackCountText:sub(1, -3)
+            else
+                stackCountText = stackCountText .. "None"
+            end
+
+            stackCountLabel.Text = stackCountText
+        end
+
+        -- Connect to change events
+        scrollContainer.ChildAdded:Connect(updateStackCount)
+        scrollContainer.ChildRemoved:Connect(updateStackCount)
+
+        -- Check existing labels on creation
+        for _, child in ipairs(scrollContainer:GetChildren()) do
+            if child:IsA("TextLabel") then
+                child:GetPropertyChangedSignal("Text"):Connect(updateStackCount)
             end
         end
-    end
 
-    -- Sort the stack counts from lowest to highest
-    table.sort(stackCounts)
-
-    -- Format the output string
-    local stackCountText = "Stack Counts: "
-    for _, count in ipairs(stackCounts) do
-        stackCountText = stackCountText .. tostring(count) .. ", "
-    end
-
-    -- Remove the last comma and space, if there were any counts
-    if #stackCounts > 0 then
-        stackCountText = stackCountText:sub(1, -3) -- Remove the last ", "
+        -- Initial update
+        updateStackCount()
     else
-        stackCountText = stackCountText .. "None"
+        -- Logic for updating the backpack stack count
+        local function updateBackpackStackCount()
+            -- Directly get the Backpack stack count from the specified path
+            local backpackCountText = backpackStackCountPath.Text
+
+            -- Update the displayed stack count for "BackPack Stacks"
+            stackCountLabel.Text = "BackPack Stacks: " .. backpackCountText
+        end
+
+        -- Listen for changes in the Backpack stack count
+        backpackStackCountPath:GetPropertyChangedSignal("Text"):Connect(updateBackpackStackCount)
+
+        -- Initial update for backpack counts
+        updateBackpackStackCount()
     end
 
-    -- Update the displayed stack count
-    stackCountLabel.Text = stackCountText
+    return frame, stackCountLabel
 end
 
--- Connect to an event that detects changes in the Scroll container
-scrollContainer.ChildAdded:Connect(updateStackCount)
-scrollContainer.ChildRemoved:Connect(updateStackCount)
+-- Create the first stack count frame with label "Stack Counts"
+createStackCountFrame(UDim2.new(0.02, 0, 0.6, 0), "Stack Counts", false) -- Position for the first frame, isBackpack = false
 
--- Optional: Detect text changes in existing TextLabels
-for _, child in ipairs(scrollContainer:GetChildren()) do
-    if child:IsA("TextLabel") then
-        child:GetPropertyChangedSignal("Text"):Connect(updateStackCount) -- Connect to detect text changes
-    end
-end
-
--- Connect new child's text change event
-scrollContainer.ChildAdded:Connect(function(child)
-    if child:IsA("TextLabel") then
-        child:GetPropertyChangedSignal("Text"):Connect(updateStackCount)
-    end
-end)
-
--- Initial update to set the count when the script runs
-updateStackCount()
+-- Create the second stack count frame with label "BackPack Stacks"
+createStackCountFrame(UDim2.new(0.18, 0, 0.6, 0), "BackPack Stacks", true) -- Position for the second frame, isBackpack = true
 
 -- Optional: Update periodically (every 1 second) if items can change rapidly
 while wait(1) do
-    updateStackCount() -- Only if necessary, to ensure count remains accurate
+    for _, frame in ipairs(screenGui:GetChildren()) do
+        if frame:IsA("Frame") then
+            local stackCountLabel = frame:FindFirstChildOfClass("TextLabel")
+            if stackCountLabel then
+                -- This will keep the original count updated, though it shouldn't change every second
+                stackCountLabel.Text = stackCountLabel.Text 
+            end
+        end
+    end
 end
-
-
-
 
 
 
