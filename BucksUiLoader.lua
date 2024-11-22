@@ -165,7 +165,7 @@ print"0, stack gui has loaded."
 -- Get the Player
 local player = game.Players.LocalPlayer
 
--- Define the paths
+-- Define the paths to the UI elements
 local scrollContainer = player:WaitForChild("PlayerGui"):WaitForChild("BackpackApp"):WaitForChild("Tooltip"):WaitForChild("List"):WaitForChild("description"):WaitForChild("Scroll")
 local backpackStackCountPath = player:WaitForChild("PlayerGui"):WaitForChild("ToolApp"):WaitForChild("Frame"):WaitForChild("Hotbar"):WaitForChild("ToolContainer"):WaitForChild("StackCount"):WaitForChild("TextLabel")
 
@@ -339,8 +339,22 @@ local function createStackCountFrame(position, labelText, isBackpack)
     return frame, stackCountLabel
 end
 
--- Create the first stack count frame with label "Stack Counts"
-createStackCountFrame(UDim2.new(0.02, 0, 0.6, 0), "Stack Counts", false) -- Position for the first frame, isBackpack = false
+-- Function to dynamically position each UI frame horizontally
+local function createStackCountFrames()
+    local startX = 0.02 -- Initial X position
+    local spacing = 0.18 -- Space between frames in the X axis
 
--- Create the second stack count frame with label "BackPack Stacks"
-createStackCountFrame(UDim2.new(0.18, 0, 0.6, 0), "BackPack Stacks", true) -- Position for the second frame, isBackpack = true
+    -- Create the first stack count frame with label "Stack Counts"
+    createStackCountFrame(UDim2.new(startX, 0, 0.6, 0), "Stack Counts", false) -- Position for the first frame, isBackpack = false
+
+    -- Create the second stack count frame with label "BackPack Stacks"
+    createStackCountFrame(UDim2.new(startX + spacing, 0, 0.6, 0), "BackPack Stacks", true) -- Position for the second frame, isBackpack = true
+
+    -- Add more frames in the same line by adjusting the `startX` and `spacing`
+    -- Create more frames as needed:
+    createStackCountFrame(UDim2.new(startX + 2 * spacing, 0, 0.6, 0), "Other Stack", false) -- Add another frame
+    -- You can continue adding frames like this
+end
+
+-- Create the stack count frames
+createStackCountFrames()
