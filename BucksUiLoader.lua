@@ -322,8 +322,24 @@ local function createStackCountFrame(position, labelText, isBackpack)
             -- Directly get the Backpack stack count from the specified path
             local backpackCountText = backpackStackCountPath.Text
 
-            -- Update the displayed stack count for "BackPack Stacks"
-            stackCountLabel.Text = "BackPack Stacks: " .. backpackCountText
+            -- Parse the numeric value from the string (ignore non-numeric characters)
+            local numericValue = backpackCountText:match("(%d+)")  -- Match the first numeric part in the text
+            local suffix = backpackCountText:match("%D*$")  -- Match any non-digit characters at the end (e.g., 'x')
+
+            -- If numeric value is found and a suffix is present, format it properly
+            if numericValue then
+                numericValue = tonumber(numericValue)  -- Convert to number for consistency
+
+                -- If there's a suffix (like 'x'), append it
+                if suffix and suffix ~= "" then
+                    stackCountLabel.Text = "BackPack Stacks: " .. numericValue .. suffix
+                else
+                    stackCountLabel.Text = "BackPack Stacks: " .. numericValue
+                end
+            else
+                -- If no valid number is found, just show a default message (or error handling)
+                stackCountLabel.Text = "BackPack Stacks: Invalid data"
+            end
 
             -- Hide the spinner once data is loaded
             loadingSpinner.Visible = false
@@ -349,11 +365,6 @@ local function createStackCountFrames()
 
     -- Create the second stack count frame with label "BackPack Stacks"
     createStackCountFrame(UDim2.new(startX + spacing, 0, 0.6, 0), "BackPack Stacks", true) -- Position for the second frame, isBackpack = true
-
-    -- Add more frames in the same line by adjusting the `startX` and `spacing`
-    -- Create more frames as needed:
-    createStackCountFrame(UDim2.new(startX + 2 * spacing, 0, 0.6, 0), "Other Stack", false) -- Add another frame
-    -- You can continue adding frames like this
 end
 
 -- Create the stack count frames
