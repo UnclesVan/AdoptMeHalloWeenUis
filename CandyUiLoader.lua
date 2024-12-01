@@ -457,3 +457,260 @@ frame.MouseLeave:Connect(function()
         Size = UDim2.new(0.3, 0, 0.15, 0)
     }):Play()
 end)
+
+print'5'
+print'4'
+print'3'
+print'2'
+print'1'
+print"0, Ailments Monitor - Task Handler v1.0 has loaded."
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Create the ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "IDDisplay"
+screenGui.Parent = LocalPlayer.PlayerGui
+
+-- Create a Frame to display the IDs
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0.3, 0, 0.2, 0)
+mainFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BackgroundTransparency = 0.5
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Create a Title Label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, 0, 0.1, 0)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+titleLabel.Text = "Ailments Monitor - Task Handler v1.0"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = mainFrame
+
+-- Create a Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 60, 0, 30)
+closeButton.Position = UDim2.new(0.5, -30, 0.85, 0) -- Adjusted Y position to be lower
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Text = "Close"
+closeButton.Parent = mainFrame
+
+-- Close button functionality
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Create a Scrolling Frame for ID List
+local idListFrame = Instance.new("ScrollingFrame")
+idListFrame.Size = UDim2.new(0.7, 0, 0.8, -40)
+idListFrame.Position = UDim2.new(0, 0, 0.2, 0)
+idListFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+idListFrame.BackgroundTransparency = 0.5
+idListFrame.ScrollBarThickness = 10
+idListFrame.Parent = mainFrame
+
+-- List layout for the ID list
+local listLayout = Instance.new("UIListLayout")
+listLayout.FillDirection = Enum.FillDirection.Horizontal
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+listLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+listLayout.Padding = UDim.new(0, 5)
+listLayout.Parent = idListFrame
+
+local UIPadding = Instance.new("UIPadding")
+UIPadding.PaddingLeft = UDim.new(0, 5)
+UIPadding.PaddingRight = UDim.new(0, 5)
+UIPadding.PaddingTop = UDim.new(0, 5)
+UIPadding.PaddingBottom = UDim.new(0, 5)
+UIPadding.Parent = idListFrame
+
+local displayedIds = {}
+
+-- Create a console frame
+local consoleFrame = Instance.new("Frame")
+consoleFrame.Size = UDim2.new(0.3, 0, 0.8, -40) -- Increased width, height = 0.8
+consoleFrame.Position = UDim2.new(0.7, 0, 0.2, 0) -- Keep original position
+consoleFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+consoleFrame.BackgroundTransparency = 0.1
+consoleFrame.Parent = mainFrame
+
+-- Create Title above the console: "Game Error Handler"
+local consoleTitleLabel = Instance.new("TextLabel")
+consoleTitleLabel.Size = UDim2.new(1, 0, 0.05, 0)
+consoleTitleLabel.Position = UDim2.new(0, 0, 0, 0)
+consoleTitleLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+consoleTitleLabel.Text = "Game Error Handler"
+consoleTitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+consoleTitleLabel.TextSize = 12
+consoleTitleLabel.Font = Enum.Font.GothamBold
+consoleTitleLabel.Parent = consoleFrame
+
+-- Create a Scrolling Frame for console messages
+local consoleScrollFrame = Instance.new("ScrollingFrame")
+consoleScrollFrame.Size = UDim2.new(1, 0, 0.85, 0) -- Height adjusted with increased size
+consoleScrollFrame.Position = UDim2.new(0, 0, 0.05, 0)
+consoleScrollFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+consoleScrollFrame.BackgroundTransparency = 0.5
+consoleScrollFrame.ScrollBarThickness = 10
+consoleScrollFrame.Parent = consoleFrame
+
+-- Create a UIListLayout for the console
+local consoleListLayout = Instance.new("UIListLayout")
+consoleListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+consoleListLayout.Padding = UDim.new(0, 5)
+consoleListLayout.Parent = consoleScrollFrame
+
+-- Create "Copy Text" button
+local copyButton = Instance.new("TextButton")
+copyButton.Size = UDim2.new(0.15, 0, 0.07, 0) -- Button size
+copyButton.Position = UDim2.new(0.7, 0, 0.9, 0) -- Position for the Copy button
+copyButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyButton.Text = "Copy Text"
+copyButton.TextSize = 20 -- Increased text size
+copyButton.Parent = mainFrame
+
+-- Create "Clear Text" button with a gap and ensure it remains in the frame
+local clearButton = Instance.new("TextButton")
+clearButton.Size = UDim2.new(0.15, 0, 0.07, 0) -- Button size
+clearButton.Position = UDim2.new(0.86, 0, 0.9, 0) -- Adjusted position for a gap
+clearButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+clearButton.Text = "Clear Text"
+clearButton.TextSize = 20 -- Increased text size
+clearButton.Parent = mainFrame
+
+-- Function to log messages to the console
+local function logToConsole(message)
+    local logEntry = Instance.new("TextLabel")
+    logEntry.Size = UDim2.new(1, 0, 0, 20)
+    logEntry.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    logEntry.TextColor3 = Color3.fromRGB(255, 255, 255)
+    logEntry.Text = message
+    logEntry.TextSize = 14
+    logEntry.Font = Enum.Font.SourceSans
+    logEntry.TextWrapped = true
+    logEntry.Parent = consoleScrollFrame
+
+    -- Adjust canvas size for the console
+    consoleScrollFrame.CanvasSize = UDim2.new(0, 0, 0, consoleScrollFrame.UIListLayout.AbsoluteContentSize.Y)
+    consoleScrollFrame.CanvasPosition = Vector2.new(0, consoleScrollFrame.CanvasSize.Y.Offset)
+end
+
+-- Function to copy all console text
+local function copyConsoleText()
+    local combinedText = ""
+    for _, child in ipairs(consoleScrollFrame:GetChildren()) do
+        if child:IsA("TextLabel") and child.Text ~= "" then
+            combinedText = combinedText .. child.Text .. "\n"
+        end
+    end
+
+    setclipboard(combinedText) -- Copy to clipboard
+    logToConsole("Copied console text to clipboard.")
+end
+
+-- Function to clear the console text
+local function clearConsole()
+    for _, child in ipairs(consoleScrollFrame:GetChildren()) do
+        if child:IsA("TextLabel") then
+            child:Destroy()
+        end
+    end
+    consoleScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    logToConsole("Cleared console text.")
+end
+
+-- Connect button functions
+copyButton.MouseButton1Click:Connect(copyConsoleText)
+clearButton.MouseButton1Click:Connect(clearConsole)
+
+-- Function to refresh the list of ailments
+local function refreshIDList()
+    local container = LocalPlayer.PlayerGui:FindFirstChild("ailments_list")
+        and LocalPlayer.PlayerGui.ailments_list:FindFirstChild("SurfaceGui")
+        and LocalPlayer.PlayerGui.ailments_list.SurfaceGui:FindFirstChild("Container")
+
+    if not container then
+        logToConsole("Container not found!")
+        return
+    end
+
+    local currentIds = {} -- Current IDs found in the Container
+    local displayedIdsCopy = {} -- Track IDs that should still be displayed
+
+    -- Check existing image labels and populate displayedIdsCopy
+    for _, child in ipairs(idListFrame:GetChildren()) do
+        if child:IsA("ImageLabel") and child.Image and child.Image ~= "" then
+            table.insert(displayedIdsCopy, child.Image) -- Store existing images
+        end
+    end
+
+    logToConsole("Scanning for Icons...")
+
+    -- Check each button in the container
+    for _, child in pairs(container:GetChildren()) do
+        if child:IsA("ImageButton") then
+            local background = child:FindFirstChild("Background")
+            if background then
+                local icon = background:FindFirstChild("Icon")
+                if icon and icon:IsA("ImageLabel") then
+                    local imageId = icon.Image
+                    if imageId and imageId ~= "" then
+                        -- Add the image to displayed IDs if it's not already there
+                        if not displayedIds[imageId] then
+                            displayedIds[imageId] = true -- Mark as displayed
+
+                            local imageLabel = Instance.new("ImageLabel")
+                            imageLabel.Size = UDim2.new(0, 80, 0, 80) -- Size of the icon
+                            imageLabel.Image = imageId
+                            imageLabel.BackgroundTransparency = 1
+                            imageLabel.Parent = idListFrame
+
+                            logToConsole("Added Image ID: " .. imageId)
+                        end
+
+                        -- Add to current IDs list
+                        table.insert(currentIds, imageId)
+                    end
+                end
+            end
+        end
+    end
+
+    -- Check for IDs that were previously displayed but are not in currentIds
+    for _, id in ipairs(displayedIdsCopy) do
+        if not table.find(currentIds, id) then
+            -- This ID is no longer present, remove it from the display
+            for _, child in ipairs(idListFrame:GetChildren()) do
+                if child:IsA("ImageLabel") and child.Image == id then
+                    child:Destroy()
+                    logToConsole("Removed Image ID: " .. id)
+                    break
+                end
+            end
+            displayedIds[id] = nil -- Remove from displayedIds tracking
+        end
+    end
+
+    -- Adjust the canvas size for the ID list
+    if #currentIds ~= #idListFrame:GetChildren() then
+        idListFrame.CanvasSize = UDim2.new(0, 0, 0, idListFrame.UIListLayout.AbsoluteContentSize.Y)
+    end
+end
+
+-- Initial scan to display IDs
+refreshIDList()
+
+-- Continuous scanning every 1 second
+while true do
+    wait(1) -- Refresh every 1 second
+    refreshIDList()
+end
