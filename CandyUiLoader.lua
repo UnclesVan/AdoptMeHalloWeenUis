@@ -463,6 +463,68 @@ print'4'
 print'3'
 print'2'
 print'1'
+print"0, Collecting Rewards has loaded."
+
+
+local loopEnabled = true  -- Set this to true to enable the loop
+
+-- Check if the loop is enabled
+if loopEnabled then
+    -- Get the player and TextLabel to show notifications
+    local player = game:GetService("Players").LocalPlayer
+    local hintLabel = player.PlayerGui:WaitForChild("HintApp"):WaitForChild("TextLabel")
+
+    -- Ensure the TextLabel is visible
+    hintLabel.Visible = true
+
+    -- Function to update the notification
+    local function updateNotification(message)
+        hintLabel.Text = message
+    end
+
+    -- Start the loop
+    while true do
+        -- Start of loop: Notify that the loop is enabled
+        updateNotification("Loop is enabled! Attempting to claim rewards...")
+
+        -- Perform the loop to attempt to claim rewards
+        for i = 1, 100 do
+            local args = {
+                [1] = i
+            }
+
+            -- Update the notification to show the current reward being claimed
+            updateNotification("Attempting to claim reward " .. i .. "...")
+
+            -- Try to claim the reward for each number
+            game:GetService("ReplicatedStorage").API:FindFirstChild("WinterfestAPI/AdventCalendarTryTakeReward"):InvokeServer(unpack(args))
+
+            -- Wait between each request to prevent too many rapid calls
+            wait(0.5)  -- Adjust this value as needed
+        end
+
+        -- After all rewards are attempted, update the message
+        updateNotification("Looping again... Attempting to claim rewards.")
+
+        -- Wait before starting the next loop iteration
+        wait(3)  -- Adjust this wait time for how often you want the message to update
+    end
+else
+    -- If the loop is disabled, show a message
+    local player = game:GetService("Players").LocalPlayer
+    local hintLabel = player.PlayerGui:WaitForChild("HintApp"):WaitForChild("TextLabel")
+    hintLabel.Text = "Loop is disabled."
+    hintLabel.Visible = true
+end
+
+
+
+
+print'5'
+print'4'
+print'3'
+print'2'
+print'1'
 print"0, Ailments Monitor - Task Handler v1.0 has loaded."
 
 local Players = game:GetService("Players")
