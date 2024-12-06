@@ -456,7 +456,7 @@ readyForChristmasLabel.TextColor3 = Color3.fromRGB(132, 182, 141)  -- White text
 readyForChristmasLabel.TextScaled = true
 readyForChristmasLabel.Font = Enum.Font.SourceSansBold
 readyForChristmasLabel.TextStrokeTransparency = 0.5
-readyForChristmasLabel.Text = "READY FOR CHRISTMAS"
+readyForChristmasLabel.Text = "READY FOR WINTERFEST"
 
 
 print'5'
