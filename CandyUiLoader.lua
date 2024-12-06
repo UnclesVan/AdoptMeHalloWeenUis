@@ -27,7 +27,7 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0.2, 0)
 corner.Parent = frame
 
--- Create TextLabel for the currency amount
+-- Create a TextLabel for the currency amount
 local amountDisplay = Instance.new("TextLabel", frame)
 amountDisplay.Size = UDim2.new(0.55, 0, 0.7, 0)
 amountDisplay.Position = UDim2.new(0.35, 0, 0.25, 0)
@@ -48,15 +48,15 @@ updateCurrencyAmount()
 
 -- Create a label to display the timer
 local timerLabel = Instance.new("TextLabel", frame)
-timerLabel.Size = UDim2.new(1, 0, 0.3, 0)
-timerLabel.Position = UDim2.new(0, 0, -0.4, 0)
+timerLabel.Size = UDim2.new(1, 0, 0.3, 0)  -- Full width for a straight line
+timerLabel.Position = UDim2.new(0, 0, -0.3, 0)  -- Moved this higher
 timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextScaled = false
+timerLabel.TextScaled = true  -- Scale text to fit
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
 timerLabel.TextTruncate = Enum.TextTruncate.AtEnd
-timerLabel.TextSize = 37
+timerLabel.TextSize = 24  -- Set a reasonable text size
 
 -- Create an event over label
 local eventOverLabel = Instance.new("TextLabel", frame)
@@ -92,19 +92,18 @@ local function updateTimerFromGameUI()
 
         local timerComponents = {}
 
-        if hoursRemaining ~= "0" then
-            table.insert(timerComponents, string.format("%s HOURS", hoursRemaining))
-        end
-
+        -- Format the components
         if daysRemaining ~= "0" then
             table.insert(timerComponents, string.format("%s DAYS", daysRemaining))
         end
-
+        if hoursRemaining ~= "0" then
+            table.insert(timerComponents, string.format("%s HOURS", hoursRemaining))
+        end
         if secondsRemaining ~= "0" then
             table.insert(timerComponents, string.format("%s SECONDS", secondsRemaining))
         end
 
-        local timerText = "EVENT ENDS IN:"
+        local timerText = "EVENT STARTS IN:"  -- Update to new text
         if #timerComponents > 0 then
             timerText = timerText .. " " .. table.concat(timerComponents, " ")
         else
@@ -134,14 +133,6 @@ ownerLabel.TextScaled = true
 ownerLabel.Font = Enum.Font.SourceSansBold
 ownerLabel.TextStrokeTransparency = 0.5
 ownerLabel.Text = "Private Script Owner: made by me"
-
--- Add the candy corn image
-local candyCorn = Instance.new("ImageLabel", frame)
-candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
-candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
-candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://5865214349"
-candyCorn.ScaleType = Enum.ScaleType.Fit
 
 -- Add the kick warning label
 local kickWarning = Instance.new("TextLabel", frame)
@@ -292,7 +283,7 @@ openButton.MouseButton1Click:Connect(function()
 
     if Fluent then
         local Window = Fluent:CreateWindow({
-            Title = "Fire Hub",  
+            Title = "Fire Hub",
             SubTitle = "Testing UI Functionality",
             TabWidth = 160,
             Size = UDim2.fromOffset(580, 460),
@@ -304,7 +295,7 @@ openButton.MouseButton1Click:Connect(function()
         local Tabs = {}
         Tabs.Main = Window:AddTab({ Title = "Main", Icon = "" })
         Tabs.StampsFarm = Window:AddTab({ Title = "Stamps Farm", Icon = "" })
-        
+
         -- Add a new tab for Christmas
         Tabs.Christmas = Window:AddTab({ Title = "Christmas: Coming Soon", Icon = "" })
 
@@ -319,27 +310,20 @@ openButton.MouseButton1Click:Connect(function()
             Title = "Collect Stamps",
             Callback = function()
                 if farmingActive then
-                    -- Stop farming
                     print("Stopping stamp collection.")
                     farmingActive = false
                 else
-                    -- Start farming
                     print("Starting stamp collection.")
                     farmingActive = true
 
-                    -- Example farming action: simulate ongoing collection while farmingActive is true
                     while farmingActive do
-                        -- Add logic for the farming process here
                         print("Collecting stamps...")
-
-                        -- Trigger the server event to claim stamps
                         local api = game:GetService("ReplicatedStorage"):WaitForChild("API")
                         local claimStamp = api:FindFirstChild("DdlmAPI/ClaimStamp")
                         if claimStamp then
-                            claimStamp:FireServer()  -- Fire the claim server event
+                            claimStamp:FireServer()
                         end
-
-                        wait(1)  -- Simulate the time between stamp collections
+                        wait(1)
                     end
                 end
             end
@@ -347,30 +331,28 @@ openButton.MouseButton1Click:Connect(function()
 
         -- Create a TextLabel for the countdown timer in the Christmas tab
         local countdownLabel = Instance.new("TextLabel", Tabs.Christmas.Container)
-        countdownLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-        countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color
-        countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color
-        countdownLabel.TextScaled = true  -- Scale the text to fit
-        countdownLabel.Text = "Initializing..."  -- Initial text
+        countdownLabel.Size = UDim2.new(1, 0, 0.3, 0)
+        countdownLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        countdownLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        countdownLabel.TextScaled = true
+        countdownLabel.Text = "Initializing..."
 
         -- Create another TextLabel for the current date and year
         local dateLabel = Instance.new("TextLabel", Tabs.Christmas.Container)
-        dateLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width and height of 30% of the tab area
-        dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark background color
-        dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Light text color
-        dateLabel.TextScaled = true  -- Scale the text to fit
-        dateLabel.Text = "Current Date: Initializing..."  -- Initial text
+        dateLabel.Size = UDim2.new(1, 0, 0.3, 0)
+        dateLabel.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        dateLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        dateLabel.TextScaled = true
+        dateLabel.Text = "Current Date: Initializing..."
 
         -- Function to update the countdown label and date label
         local function updateChristmasCountdown()
             local currentTime = getCurrentAustralianTime()
             local christmasTime = os.time({year = 2024, month = 12, day = 25, hour = 0, min = 0, sec = 0})
 
-            -- Get the current date and format it
             local currentDate = os.date("%B %d, %Y", currentTime)
             dateLabel.Text = "Current Date: " .. currentDate
 
-            -- Check if the current date is before Christmas
             if currentTime < christmasTime then
                 local timeLeft = christmasTime - currentTime
                 local days = math.floor(timeLeft / 86400)
@@ -379,10 +361,9 @@ openButton.MouseButton1Click:Connect(function()
                 local seconds = timeLeft % 60
 
                 countdownLabel.Text = string.format("TIME UNTIL CHRISTMAS: %02d DAYS %02d HOURS %02d MINUTES %02d SECONDS", days, hours, minutes, seconds)
-            elseif currentTime >= christmasTime then
+            else
                 countdownLabel.Visible = false
                 dateLabel.Visible = false
-                -- Add logic for what happens after Christmas (e.g., a button to collect rewards)
             end
         end
 
@@ -457,6 +438,25 @@ frame.MouseLeave:Connect(function()
         Size = UDim2.new(0.3, 0, 0.15, 0)
     }):Play()
 end)
+
+-- Add the candy corn image
+local candyCorn = Instance.new("ImageLabel", frame)
+candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
+candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
+candyCorn.BackgroundTransparency = 1
+candyCorn.Image = "rbxassetid://"  -- Candy corn image ID
+candyCorn.ScaleType = Enum.ScaleType.Fit
+
+-- Create the "READY FOR CHRISTMAS" message on top of the candy corn image
+local readyForChristmasLabel = Instance.new("TextLabel", frame)
+readyForChristmasLabel.Size = UDim2.new(0.35, 0, 0.3, 0)  -- Adjust size as necessary
+readyForChristmasLabel.Position = UDim2.new(0.02, 0, 0.35, 0)  -- Centered over the image
+readyForChristmasLabel.BackgroundTransparency = 1
+readyForChristmasLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- White text
+readyForChristmasLabel.TextScaled = true
+readyForChristmasLabel.Font = Enum.Font.SourceSansBold
+readyForChristmasLabel.TextStrokeTransparency = 0.5
+readyForChristmasLabel.Text = "READY FOR CHRISTMAS"
 
 
 print'5'
