@@ -356,8 +356,60 @@ local function createStackCountFrame(position, labelText, isBackpack)
     return frame, stackCountLabel
 end
 
+-- Function to create the Player Count frame
+local function createPlayerCountFrame(position)
+    -- Create the main frame
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0.35, 0, 0.25, 0)  -- Size of the frame
+    frame.Position = position
+    frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+
+    -- Aspect ratio for the frame (optional)
+    local aspectRatio = Instance.new("UIAspectRatioConstraint")
+    aspectRatio.Parent = frame
+
+    -- Corner radius for rounded corners
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = frame
+
+    -- Text label for the "Players:" text
+    local playerCountLabel = Instance.new("TextLabel")
+    playerCountLabel.Size = UDim2.new(1, 0, 0.6, 0)  -- Full width, 60% height of the frame
+    playerCountLabel.Position = UDim2.new(0, 0, 0, 0)
+    playerCountLabel.BackgroundTransparency = 1
+    playerCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    playerCountLabel.TextScaled = true
+    playerCountLabel.Text = "Players:"  -- Just the label text
+    playerCountLabel.Parent = frame
+
+    -- Text label to display the actual number of players below "Players:"
+    local actualPlayerCountLabel = Instance.new("TextLabel")
+    actualPlayerCountLabel.Size = UDim2.new(1, 0, 0.4, 0)  -- Full width, 40% height of the frame
+    actualPlayerCountLabel.Position = UDim2.new(0, 0, 0.6, 0)
+    actualPlayerCountLabel.BackgroundTransparency = 1
+    actualPlayerCountLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    actualPlayerCountLabel.TextScaled = true
+    actualPlayerCountLabel.Text = "0"  -- Initial number of players
+    actualPlayerCountLabel.Parent = frame
+
+    -- Function to update the player count text
+    local function updatePlayerCount()
+        local playerCount = game.Players.NumPlayers  -- Get the number of players in the game (client-side)
+        actualPlayerCountLabel.Text = tostring(playerCount)  -- Update the actual player count text
+    end
+
+    -- Update the player count every 2 seconds
+    while true do
+        updatePlayerCount()  -- Update player count
+        wait(2)  -- Wait for 2 seconds before updating again
+    end
+end
+
 -- Function to dynamically position each UI frame horizontally
-local function createStackCountFrames()
+local function createAllFrames()
     local startX = 0.02 -- Initial X position
     local spacing = 0.18 -- Space between frames in the X axis
 
@@ -366,7 +418,11 @@ local function createStackCountFrames()
 
     -- Create the second stack count frame with label "BackPack Stacks"
     createStackCountFrame(UDim2.new(startX + spacing, 0, 0.6, 0), "BackPack Stacks", true) -- Position for the second frame, isBackpack = true
+
+    -- Create the third frame for "Player Count"
+    createPlayerCountFrame(UDim2.new(startX + 2 * spacing, 0, 0.6, 0))  -- Position for Player Count frame
 end
 
--- Create the stack count frames
-createStackCountFrames()
+-- Create all frames (Stack Counts, Backpack Stacks, Player Count)
+createAllFrames()
+
