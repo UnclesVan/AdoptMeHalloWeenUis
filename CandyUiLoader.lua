@@ -52,11 +52,11 @@ timerLabel.Size = UDim2.new(1, 0, 0.3, 0)  -- Full width for a straight line
 timerLabel.Position = UDim2.new(0, 0, -0.3, 0)  -- Moved this higher
 timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextScaled = true  -- Scale text to fit
+timerLabel.TextScaled = false  -- Scale text to fit
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
 timerLabel.TextTruncate = Enum.TextTruncate.AtEnd
-timerLabel.TextSize = 24  -- Set a reasonable text size
+timerLabel.TextSize = 47  -- Set a reasonable text size
 
 -- Create an event over label
 local eventOverLabel = Instance.new("TextLabel", frame)
@@ -82,35 +82,10 @@ local function checkTimerAndKick()
     end
 end
 
--- Function to update the timer label
+-- Function to update the timer label exactly from the original timer label
 local function updateTimerFromGameUI()
     if originalTimerLabel and originalTimerLabel.Text then
-        local remainingTimeText = originalTimerLabel.Text
-        local daysRemaining = string.match(remainingTimeText, "(%d+)%s+DAYS") or "0"
-        local hoursRemaining = string.match(remainingTimeText, "(%d+)%s+HOURS") or "0"
-        local secondsRemaining = string.match(remainingTimeText, "(%d+)%s+SECONDS") or "0"
-
-        local timerComponents = {}
-
-        -- Format the components
-        if daysRemaining ~= "0" then
-            table.insert(timerComponents, string.format("%s DAYS", daysRemaining))
-        end
-        if hoursRemaining ~= "0" then
-            table.insert(timerComponents, string.format("%s HOURS", hoursRemaining))
-        end
-        if secondsRemaining ~= "0" then
-            table.insert(timerComponents, string.format("%s SECONDS", secondsRemaining))
-        end
-
-        local timerText = "EVENT STARTS IN:"  -- Update to new text
-        if #timerComponents > 0 then
-            timerText = timerText .. " " .. table.concat(timerComponents, " ")
-        else
-            timerText = timerText .. " TIME NOT AVAILABLE"
-        end
-
-        timerLabel.Text = timerText
+        timerLabel.Text = originalTimerLabel.Text -- Directly copy the text without modification
         checkTimerAndKick()
     end
 end
