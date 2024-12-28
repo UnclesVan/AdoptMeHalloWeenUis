@@ -44,7 +44,7 @@ local function customLoadingSequence()
     print = function() end
 
     -- Load and execute the external script
-    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/e4315db490a84e920190f83279c4732e.lua"))()
+
 
     
     Window.LoadingSubtitle = "Please wait, loading remotes..."
