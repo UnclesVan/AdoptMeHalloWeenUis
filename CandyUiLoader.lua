@@ -415,12 +415,19 @@ frame.MouseLeave:Connect(function()
 end)
 
 -- Add the candy corn image
-local candyCorn = Instance.new("ImageLabel", frame)
+local candyCorn = Instance.new("ImageLabel", frame)                        
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
 candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
 candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://6048692831"  -- Candy corn image ID
+candyCorn.Image = "rbxassetid://80184394321521"  -- Reference image ID    
 candyCorn.ScaleType = Enum.ScaleType.Fit
+
+--all old image IDs from Adopt Me! Devs:
+--Candy Corn ID: 6048692831
+--Stars ID: 80184394321521 using.
+
+
+
 
 -- Create the "READY FOR CHRISTMAS" message on top of the candy corn image
 local readyForChristmasLabel = Instance.new("TextLabel", frame)
