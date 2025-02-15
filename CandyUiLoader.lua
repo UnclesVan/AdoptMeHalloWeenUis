@@ -119,7 +119,7 @@ kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255)
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "You will be kicked from this Experience once the timer hits 0."
+kickWarning.Text = "You will be kicked from this Experience once there is a new Patch In place and when the timer hits 0."
 
 -- Create new TextLabels for time until Christmas and the current date
 local timeUntilChristmasLabel = Instance.new("TextLabel", frame)
@@ -419,13 +419,13 @@ local candyCorn = Instance.new("ImageLabel", frame)
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
 candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
 candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://80184394321521"  -- Reference image ID    
+candyCorn.Image = "rbxassetid://86091048492397"  -- Reference image ID    
 candyCorn.ScaleType = Enum.ScaleType.Fit
 
 --all old image IDs from Adopt Me! Devs:
---Candy Corn ID: 6048692831
---Stars ID: 80184394321521 using.
-
+--Candy Corn ID: 6048692831 patched.
+--Stars ID: 80184394321521 patched.
+-- 80184394321521 patched.
 
 
 
