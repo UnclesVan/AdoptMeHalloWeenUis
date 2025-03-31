@@ -63,9 +63,7 @@ local function checkTimerAndKick()
     if timerLabelReference and timerLabelReference.Text then
         local timeRemaining = tonumber(string.match(timerLabelReference.Text, "%d+")) or 0  -- Adjust this based on your timer's format
         if timeRemaining <= 0 then
-            player:Kick("You were kicked from this Experience. The event has ended. Please check for updates.")
-            eventOverLabel.Text = "EVENT IS OVER"  -- Update the event over label
-            eventOverLabel.Visible = true  -- Show the label
+
         end
     end
 end
