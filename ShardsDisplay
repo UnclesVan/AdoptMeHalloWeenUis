@@ -25,7 +25,7 @@ corner.CornerRadius = UDim.new(0.2, 0)
 corner.Parent = frame
 
 -- Reference to the new currency amount label
-local newAmountLabel = playerGui:WaitForChild("MinigameInGameApp"):WaitForChild("Body"):WaitForChild("Right"):WaitForChild("Container"):WaitForChild("ValueLabel")
+local newAmountLabel = playerGui:WaitForChild("MinigameNewsPaperApp"):WaitForChild("Body"):WaitForChild("Container"):WaitForChild("RewardsFrame"):WaitForChild("TitleLabel")
 
 -- Create a TextLabel for the currency amount
 local amountDisplay = Instance.new("TextLabel", frame)
@@ -36,11 +36,35 @@ amountDisplay.TextColor3 = Color3.new(0, 0, 0)
 amountDisplay.TextScaled = true
 amountDisplay.Font = Enum.Font.SourceSansBold
 amountDisplay.TextStrokeTransparency = 0.5
-amountDisplay.Text = newAmountLabel.Text  -- Set the initial text
+amountDisplay.Text = newAmountLabel.Text -- Set the initial text
 
--- Function to update the amount
+-- Function to format a number with commas
+local function formatNumberWithCommas(num)
+    if not num then return "0" end
+    num = tostring(num)
+    
+    -- This will format the number string with a single comma
+    local formatted = num:reverse():gsub("(%d%d%d)", "%1,"):reverse()
+    
+    -- Remove leading comma, if any
+    if formatted:sub(1,1) == ',' then
+        return formatted:sub(2)
+    end
+
+    return formatted
+end
+
+-- Function to update the amount with comma formatting
 local function updateCurrencyAmount()
-    amountDisplay.Text = newAmountLabel.Text  -- Update to the new currency amount
+    -- Get the amount as a number
+    local amount = tonumber(newAmountLabel.Text)
+
+    -- If amount is valid, format it with commas, else fallback to just displaying 0
+    if amount then
+        amountDisplay.Text = formatNumberWithCommas(amount) -- Format with commas
+    else
+        amountDisplay.Text = "0" -- Handle non-numeric case
+    end
 end
 
 -- Connect to the new currency label's Changed event
@@ -51,34 +75,35 @@ updateCurrencyAmount()
 
 -- Create a label to display the timer
 local timerLabel = Instance.new("TextLabel", frame)
-timerLabel.Size = UDim2.new(1, 0, 0.3, 0)  -- Full width for a straight line
-timerLabel.Position = UDim2.new(0, 0, -0.3, 0)  -- Moved this higher
+timerLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Full width for a straight line
+timerLabel.Position = UDim2.new(0, 0, -0.3, 0) -- Moved this higher
 timerLabel.BackgroundTransparency = 1
 timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-timerLabel.TextScaled = false  -- Scale text to fit
+timerLabel.TextScaled = false -- Scale text to fit
 timerLabel.Font = Enum.Font.SourceSansBold
 timerLabel.TextStrokeTransparency = 0.5
 timerLabel.TextTruncate = Enum.TextTruncate.AtEnd
-timerLabel.TextSize = 47  -- Set a reasonable text size
+timerLabel.TextSize = 47 -- Set a reasonable text size
 
 -- Create an event over label
 local eventOverLabel = Instance.new("TextLabel", frame)
 eventOverLabel.Size = UDim2.new(1, 0, 0.2, 0)
-eventOverLabel.Position = UDim2.new(0, 0, 0.75, 0) 
+eventOverLabel.Position = UDim2.new(0, 0, 0.75, 0)
 eventOverLabel.BackgroundTransparency = 1
 eventOverLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
 eventOverLabel.TextScaled = true
 eventOverLabel.Font = Enum.Font.SourceSansBold
 eventOverLabel.TextStrokeTransparency = 0.5
 eventOverLabel.Text = ""
-eventOverLabel.Visible = false  -- Hidden by default
+eventOverLabel.Visible = false -- Hidden by default
 
 -- Function to check if the timer has reached zero and kick the player
 local function checkTimerAndKick()
     if originalTimerLabel and originalTimerLabel.Text then
         local daysRemaining = tonumber(string.match(originalTimerLabel.Text, "%d+")) or 0
         if daysRemaining <= 0 then
-       
+            -- Kick the player or perform any action you want to take here
+            player:Kick("You have been kicked due to timer expiration.")
         end
     end
 end
@@ -120,7 +145,7 @@ kickWarning.TextColor3 = Color3.fromRGB(255, 255, 255)
 kickWarning.TextScaled = true
 kickWarning.Font = Enum.Font.SourceSansBold
 kickWarning.TextStrokeTransparency = 0.5
-kickWarning.Text = "You will be kicked from this Experience once there is a new Patch In place and when the timer hits 0."
+kickWarning.Text = "You will be kicked from this Experience once there is a new Patch in place and when the timer hits 0."
 
 -- Create new TextLabels for time until Christmas and the current date
 local timeUntilChristmasLabel = Instance.new("TextLabel", frame)
