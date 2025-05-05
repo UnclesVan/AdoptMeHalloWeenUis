@@ -1,0 +1,60 @@
+-- Services
+local player = game:GetService("Players").LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Control variables
+local DialogGUI = true -- Set to true to enable DialogApp initially, false to disable
+local BuyItems = true -- Set to true to start the buying loop, false to prevent it from starting
+
+-- Function to set the enabled state of the DialogApp ScreenGui
+local function setDialogAppEnabled(enabled)
+    -- Wait for the DialogApp ScreenGui to exist
+    local dialogApp = playerGui:WaitForChild("DialogApp", 60) -- Use a reasonable timeout
+
+    if dialogApp and dialogApp:IsA("ScreenGui") then
+        -- Set the Enabled property directly
+        dialogApp.Enabled = enabled
+        print("DialogApp ScreenGui Enabled set to:", enabled)
+    elseif not dialogApp then
+        warn("DialogApp ScreenGui not found within the timeout!")
+    else
+        warn("Found an object at the path, but it's not a ScreenGui.")
+    end
+end
+
+-- --- Execution Flow ---
+
+-- 1. Load External Scripts (These will run regardless of your control variables)
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoptMeHalloWeenUis/refs/heads/main/SocialStoneUIAdoPtMe!')))() -- Show Soical Stones UI
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoPtMe-/refs/heads/main/dehashwithslashinmiddle')))() -- dehash Remotes Required
+
+-- 2. Control the DialogApp based on the DialogGUI variable
+setDialogAppEnabled(DialogGUI)
+
+-- 3. Handle the Item Buying Logic based on the BuyItems variable
+if BuyItems then
+    print("BuyItems is true. Starting the buying loop.")
+    local args = {
+        "pets",
+        "moon_2025_glormy_dolphin",
+        1
+    }
+
+    local event = game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("SocialStonesAPI/AttemptExchange", 60)
+
+    if event then
+        print("AttemptExchange RemoteEvent found.")
+        -- Start the buying loop (will run indefinitely)
+        while true do
+            event:FireServer(unpack(args))
+            wait(7) -- Wait for 7 seconds before the next iteration
+        end
+    else
+        warn("AttemptExchange RemoteEvent not found within the timeout.")
+    end
+else
+    print("BuyItems is false. The buying loop will not start.")
+end
+
+-- Code below this point will only be reached if BuyItems is false
+-- or if the while true loop is somehow broken (which is unlikely in this setup)
