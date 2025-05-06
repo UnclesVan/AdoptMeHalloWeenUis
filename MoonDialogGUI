@@ -2,17 +2,14 @@
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Control variables
-local DialogGUI = true -- Set to true to enable DialogApp initially, false to disable
-local BuyItems = true -- Set to true to start the buying loop, false to prevent it from starting
+-- Control variables (global, controlled by loaded script)
+_G.DialogGUIEnabled = true
+_G.BuyItemsEnabled = true
 
 -- Function to set the enabled state of the DialogApp ScreenGui
 local function setDialogAppEnabled(enabled)
-    -- Wait for the DialogApp ScreenGui to exist
-    local dialogApp = playerGui:WaitForChild("DialogApp", 60) -- Use a reasonable timeout
-
+    local dialogApp = playerGui:WaitForChild("DialogApp", 60)
     if dialogApp and dialogApp:IsA("ScreenGui") then
-        -- Set the Enabled property directly
         dialogApp.Enabled = enabled
         print("DialogApp ScreenGui Enabled set to:", enabled)
     elseif not dialogApp then
@@ -22,39 +19,54 @@ local function setDialogAppEnabled(enabled)
     end
 end
 
+-- Function to handle the item buying loop
+local function handleItemBuying()
+    if _G.BuyItemsEnabled then
+        print("BuyItems is true. Starting the buying loop.")
+        local args = {
+            "pets",
+            "moon_2025_glormy_dolphin",
+            1
+        }
+        local event = game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("SocialStonesAPI/AttemptExchange", 60)
+        if event then
+            print("AttemptExchange RemoteEvent found.")
+            while _G.BuyItemsEnabled do
+                event:FireServer(unpack(args))
+                wait(7)
+            end
+            print("Buying loop stopped.")
+        else
+            warn("AttemptExchange RemoteEvent not found within the timeout.")
+        end
+    else
+        print("BuyItems is false. The buying loop will not start.")
+    end
+end
+
 -- --- Execution Flow ---
 
 -- 1. Load External Scripts (These will run regardless of your control variables)
-loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoptMeHalloWeenUis/refs/heads/main/SocialStoneUIAdoPtMe!')))() -- Show Soical Stones UI
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoptMeHalloWeenUis/refs/heads/main/SocialStoneUIAdoPtMe!')))() -- Show Social Stones UI
 loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoPtMe-/refs/heads/main/dehashwithslashinmiddle')))() -- dehash Remotes Required
 
--- 2. Control the DialogApp based on the DialogGUI variable
-setDialogAppEnabled(DialogGUI)
+-- 2. Make control variables global BEFORE loading the controlling script
+_G.DialogGUIEnabled = DialogGUI
+_G.BuyItemsEnabled = BuyItems
 
--- 3. Handle the Item Buying Logic based on the BuyItems variable
-if BuyItems then
-    print("BuyItems is true. Starting the buying loop.")
-    local args = {
-        "pets",
-        "moon_2025_glormy_dolphin",
-        1
-    }
+-- 3. Load the controlling script from GitHub
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoptMeHalloWeenUis/refs/heads/main/MoonDialogGUI')))()
 
-    local event = game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("SocialStonesAPI/AttemptExchange", 60)
+-- 4. Control the DialogApp based on the global DialogGUIEnabled variable
+setDialogAppEnabled(_G.DialogGUIEnabled)
 
-    if event then
-        print("AttemptExchange RemoteEvent found.")
-        -- Start the buying loop (will run indefinitely)
-        while true do
-            event:FireServer(unpack(args))
-            wait(7) -- Wait for 7 seconds before the next iteration
-        end
-    else
-        warn("AttemptExchange RemoteEvent not found within the timeout.")
-    end
-else
-    print("BuyItems is false. The buying loop will not start.")
-end
+-- 5. Handle the Item Buying Logic based on the global BuyItemsEnabled variable
+handleItemBuying()
 
--- Code below this point will only be reached if BuyItems is false
--- or if the while true loop is somehow broken (which is unlikely in this setup)
+-- You might want to add a continuous check here if the GitHub script changes these variables dynamically
+-- while true do
+--     wait(1)
+--     setDialogAppEnabled(_G.DialogGUIEnabled)
+--     -- If the buying loop needs to be toggled on/off dynamically, you might need a different approach
+--     -- For a simple start/stop, the handleItemBuying function is sufficient on initial run.
+-- end
