@@ -54,30 +54,32 @@ local uiOffsetX = 200 -- Adjust this value to move it further right
 local uiOffsetY = 50  -- Optional: Adjust vertical offset
 
 local buttons = {}
-local toggleFlags = {false, false, false, false}
+local toggleFlags = {false, false, false, false, false} -- Added one more for the new toggle
 local autoOpenCoroutine = nil
 local attemptClaimCoroutine = nil
-local autoBuyCoroutine = nil
+local autoBuyPetsCoroutine = nil -- Renamed the original auto buy
+local autoBuyBoxesCoroutine = nil -- New auto buy for boxes
 local autoCloseCoroutine = nil
 
 local labels = {
 	"Auto Open",
 	"Claim Gibbion",
-	"Auto Buy",
-	"Auto Close Reward"
+	"Auto Buy Pets",
+	"Auto Close Reward",
+	"Auto Buy Boxes" -- New label
 }
 
--- Create the 4 toggle buttons
+-- Create the 5 toggle buttons
 for i, label in ipairs(labels) do
 	local btn = createButton(label, uiOffsetY + 10 + (i-1)*50) -- Adjusted spacing and offset
 	btn.Position = UDim2.new(0, uiOffsetX + 10, 0, uiOffsetY + 10 + (i-1)*50) -- Apply horizontal offset
 	btn.Name = label .. "Button"
-	btn.Parent = screenGui
 	buttons[i] = btn
+	btn.Parent = screenGui
 end
 
 -- Position for the "Close" button
-local closeButtonY = uiOffsetY + 10 + 4*50 + 15 -- Adjusted position
+local closeButtonY = uiOffsetY + 10 + 5*50 + 15 -- Adjusted position
 
 -- Create the "Close" button
 local closeBtn = Instance.new("TextButton")
@@ -90,24 +92,43 @@ closeBtn.Font = Enum.Font.SourceSansBold
 closeBtn.TextSize = 14
 closeBtn.Parent = screenGui
 
--- Create "Buy Amount:" label **above** the "Close" button
-local buyLabelY = closeButtonY + 40 + 10 -- Position it below the close button
-local buyLabel = createLabel("Buy Amount:", buyLabelY)
-buyLabel.Position = UDim2.new(0, uiOffsetX + 10, 0, buyLabelY) -- Apply horizontal offset
-buyLabel.Parent = screenGui
+-- Position for the "Buy Amount:" label (for pets)
+local buyPetsLabelY = closeButtonY + 40 + 10
+local buyPetsLabel = createLabel("Buy Pet Amount:", buyPetsLabelY)
+buyPetsLabel.Position = UDim2.new(0, uiOffsetX + 10, 0, buyPetsLabelY)
+buyPetsLabel.Parent = screenGui
 
--- Create the TextBox **below** the label
-local buyAmountBoxY = buyLabelY + 20 + 5 -- some space below label
-local buyAmountBox = Instance.new("TextBox")
-buyAmountBox.Size = UDim2.new(0, 200, 0, 30)
-buyAmountBox.Position = UDim2.new(0, uiOffsetX + 10, 0, buyAmountBoxY) -- Apply horizontal offset
-buyAmountBox.Text = "1"
-buyAmountBox.PlaceholderText = "Enter amount"
-buyAmountBox.BackgroundColor3 = Color3.new(1,1,1)
-buyAmountBox.TextColor3 = Color3.new(0,0,0)
-buyAmountBox.Font = Enum.Font.SourceSansSemibold
-buyAmountBox.TextSize = 12
-buyAmountBox.Parent = screenGui
+-- Create the TextBox for pet buy amount
+local buyPetsAmountBoxY = buyPetsLabelY + 20 + 5
+local buyPetsAmountBox = Instance.new("TextBox")
+buyPetsAmountBox.Size = UDim2.new(0, 200, 0, 30)
+buyPetsAmountBox.Position = UDim2.new(0, uiOffsetX + 10, 0, buyPetsAmountBoxY)
+buyPetsAmountBox.Text = "1"
+buyPetsAmountBox.PlaceholderText = "Enter pet amount"
+buyPetsAmountBox.BackgroundColor3 = Color3.new(1,1,1)
+buyPetsAmountBox.TextColor3 = Color3.new(0,0,0)
+buyPetsAmountBox.Font = Enum.Font.SourceSansSemibold
+buyPetsAmountBox.TextSize = 12
+buyPetsAmountBox.Parent = screenGui
+
+-- Position for the "Buy Box Amount:" label
+local buyBoxesLabelY = buyPetsAmountBoxY + 30 + 10
+local buyBoxesLabel = createLabel("Buy Box Amount:", buyBoxesLabelY)
+buyBoxesLabel.Position = UDim2.new(0, uiOffsetX + 10, 0, buyBoxesLabelY)
+buyBoxesLabel.Parent = screenGui
+
+-- Create the TextBox for box buy amount
+local buyBoxesAmountBoxY = buyBoxesLabelY + 20 + 5
+local buyBoxesAmountBox = Instance.new("TextBox")
+buyBoxesAmountBox.Size = UDim2.new(0, 200, 0, 30)
+buyBoxesAmountBox.Position = UDim2.new(0, uiOffsetX + 10, 0, buyBoxesAmountBoxY)
+buyBoxesAmountBox.Text = "2"
+buyBoxesAmountBox.PlaceholderText = "Enter box amount"
+buyBoxesAmountBox.BackgroundColor3 = Color3.new(1,1,1)
+buyBoxesAmountBox.TextColor3 = Color3.new(0,0,0)
+buyBoxesAmountBox.Font = Enum.Font.SourceSansSemibold
+buyBoxesAmountBox.TextSize = 12
+buyBoxesAmountBox.Parent = screenGui
 
 -- Helper for clicking
 local function fireConnections(event)
@@ -162,11 +183,11 @@ local function attemptClaimLoop()
 	attemptClaimCoroutine = nil -- Clean up the coroutine variable
 end
 
--- Auto Buy Gibbion loop - NOW USES TEXTBOX AMOUNT
-local function autoBuyLoop()
+-- Auto Buy Pets loop - NOW USES TEXTBOX AMOUNT
+local function autoBuyPetsLoop()
 	while toggleFlags[3] do
 		local success, err = pcall(function()
-			local buyAmount = tonumber(buyAmountBox.Text)
+			local buyAmount = tonumber(buyPetsAmountBox.Text)
 			if not buyAmount or buyAmount < 1 then
 				buyAmount = 1 -- Default to 1 if the input is invalid
 			end
@@ -181,13 +202,41 @@ local function autoBuyLoop()
 			game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
 			wait(1) -- Small delay between buy attempts
 		end)
-		if not success then warn("AutoBuy error:", err) end
+		if not success then warn("AutoBuy Pets error:", err) end
 		wait(0.5) -- General delay for the loop
 		if not toggleFlags[3] then
 			break
 		end
 	end
-	autoBuyCoroutine = nil
+	autoBuyPetsCoroutine = nil
+end
+
+-- Auto Buy Gibbion Boxes loop
+local function autoBuyBoxesLoop()
+	while toggleFlags[5] do
+		local success, err = pcall(function()
+			local buyAmount = tonumber(buyBoxesAmountBox.Text)
+			if not buyAmount or buyAmount < 1 then
+				buyAmount = 1 -- Default to 1 if the input is invalid
+			end
+
+			local args = {
+				"gifts", -- Buying the GIFT BOX
+				"gibbon_2025_standard_box",
+				{
+					buy_count = buyAmount
+				}
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
+			wait(1) -- Small delay between buy attempts
+		end)
+		if not success then warn("AutoBuy Boxes error:", err) end
+		wait(0.5) -- General delay for the loop
+		if not toggleFlags[5] then
+			break
+		end
+	end
+	autoBuyBoxesCoroutine = nil
 end
 
 -- Auto Close loop - now controlled solely by its toggle
@@ -248,20 +297,20 @@ buttons[2].MouseButton1Click:Connect(function()
 	end
 end)
 
--- 3. AutoBuyGibbion + textbox for amount
+-- 3. AutoBuy Pets + textbox for amount
 buttons[3].MouseButton1Click:Connect(function()
 	toggleFlags[3] = not toggleFlags[3]
 	local btn = buttons[3]
 	if toggleFlags[3] then
-		btn.Text = "Auto Buy: ON" -- Shorter text
+		btn.Text = "Auto Buy Pets: ON" -- Shorter text
 		btn.BackgroundColor3 = Color3.new(0, 0.5, 0) -- Darker green
-		autoBuyCoroutine = coroutine.create(autoBuyLoop)
-		coroutine.resume(autoBuyCoroutine)
+		autoBuyPetsCoroutine = coroutine.create(autoBuyPetsLoop)
+		coroutine.resume(autoBuyPetsCoroutine)
 	else
-		btn.Text = "Auto Buy: OFF"
+		btn.Text = "Auto Buy Pets: OFF"
 		btn.BackgroundColor3 = Color3.new(0.5, 0, 0) -- Darker red
-		if autoBuyCoroutine and coroutine.status(autoBuyCoroutine) == "running" then
-			toggleFlags[3] = false -- Ensure the loop in autoBuyLoop stops
+		if autoBuyPetsCoroutine and coroutine.status(autoBuyPetsCoroutine) == "running" then
+			toggleFlags[3] = false -- Ensure the loop in autoBuyPetsLoop stops
 		end
 	end
 end)
@@ -284,10 +333,29 @@ buttons[4].MouseButton1Click:Connect(function()
 	end
 end)
 
+-- 5. AutoBuy Gibbion Boxes + textbox for amount
+buttons[5].MouseButton1Click:Connect(function()
+	toggleFlags[5] = not toggleFlags[5]
+	local btn = buttons[5]
+	if toggleFlags[5] then
+		btn.Text = "Auto Buy Boxes: ON" -- Shorter text
+		btn.BackgroundColor3 = Color3.new(0, 0.5, 0) -- Darker green
+		autoBuyBoxesCoroutine = coroutine.create(autoBuyBoxesLoop)
+		coroutine.resume(autoBuyBoxesCoroutine)
+	else
+		btn.Text = "Auto Buy Boxes: OFF"
+		btn.BackgroundColor3 = Color3.new(0.5, 0, 0) -- Darker red
+		if autoBuyBoxesCoroutine and coroutine.status(autoBuyBoxesCoroutine) == "running" then
+			toggleFlags[5] = false -- Ensure the loop in autoBuyBoxesLoop stops
+		end
+	end
+end)
+
 closeBtn.MouseButton1Click:Connect(function()
 	toggleFlags[1] = false
 	toggleFlags[2] = false
 	toggleFlags[3] = false
 	toggleFlags[4] = false
+	toggleFlags[5] = false
 	screenGui:Destroy()
 end)
