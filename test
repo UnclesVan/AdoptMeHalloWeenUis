@@ -1,128 +1,47 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Workspace = game.Workspace
 
-local startTestEvent = ReplicatedStorage:WaitForChild("StartTestEvent")
+local spawnLocation = Vector3.new(0, 0, 0) -- Set spawn location here
+local minDistance = 100 -- Minimum distance from spawn
 
-local screenGui = nil
-local textLabel = nil
-local flashingTween = nil
-
--- Function to format seconds into HH:MM:SS
-local function formatTime(seconds)
-    local hours = math.floor(seconds / 3600)
-    local minutes = math.floor((seconds % 3600) / 60)
-    local remainingSeconds = math.floor(seconds % 60)
-    return string.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+local function getRandomPositionAwayFromSpawn()
+    local angle = math.random() * 2 * math.pi
+    local distance = minDistance + math.random(50, 200) -- Random distance away
+    local x = spawnLocation.X + math.cos(angle) * distance
+    local z = spawnLocation.Z + math.sin(angle) * distance
+    local y = 50 -- Height above ground, adjust as needed
+    return Vector3.new(x, y, z)
 end
 
--- Create UI elements if not already created
-local function createUI()
-    if screenGui and screenGui.Parent then
-        return
+local function teleportPlayer(player)
+    local character = player.Character
+    if not character then return end
+    local humanoidRoot = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRoot then return end
+
+    local newPos = getRandomPositionAwayFromSpawn()
+
+    -- Move player
+    humanoidRoot.CFrame = CFrame.new(newPos + Vector3.new(0, 5, 0)) -- Slightly above ground
+
+    -- Create platform beneath the player
+    local platform = Workspace:FindFirstChild("TeleportPlatform")
+    if not platform then
+        -- Create if not exists
+        platform = Instance.new("Part")
+        platform.Name = "TeleportPlatform"
+        platform.Size = Vector3.new(10, 1, 10)
+        platform.Anchored = true
+        platform.BrickColor = BrickColor.new("Bright yellow")
+        platform.Parent = Workspace
     end
 
-    screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "TestCountdownUI"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = player:WaitForChild("PlayerGui")
-
-    textLabel = Instance.new("TextLabel")
-    textLabel.Name = "CountdownLabel"
-    textLabel.Size = UDim2.new(0.5, 0, 0.1, 0)
-    textLabel.Position = UDim2.new(0.25, 0, 0.1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Font = Enum.Font.SourceSansBold
-    textLabel.TextSize = 50
-    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red
-    textLabel.TextStrokeTransparency = 0
-    textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    textLabel.Text = "Loading Timer..."
-    textLabel.ZIndex = 10
-    textLabel.Parent = screenGui
-
-    -- Create flashing tween for TextColor
-    local tweenInfo = TweenInfo.new(
-        0.5,
-        Enum.EasingStyle.Sine,
-        Enum.EasingDirection.InOut,
-        -1,
-        true,
-        0
-    )
-
-    flashingTween = TweenService:Create(
-        textLabel,
-        tweenInfo,
-        { TextColor3 = Color3.fromRGB(255, 100, 100) }
-    )
-
-    -- Start flashing
-    flashingTween:Play()
+    platform.CFrame = CFrame.new(newPos - Vector3.new(0, platform.Size.Y / 2, 0))
 end
 
--- Function to start the countdown timer
-local function startCountdown(durationSeconds)
-    createUI()
-
-    -- Cancel previous tween if any
-    if flashingTween then
-        flashingTween:Cancel()
-    end
-
-    -- Reset UI properties
-    textLabel.Text = "Starting..."
-    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-
-    -- Initialize countdown
-    local startTime = os.time()
-    local endTime = startTime + durationSeconds
-
-    -- Countdown loop
-    while true do
-        if not textLabel or not textLabel.Parent then break end
-
-        local now = os.time()
-        local remaining = endTime - now
-
-        if remaining <= 0 then
-            -- Timer finished
-            if flashingTween then
-                flashingTween:Cancel()
-                flashingTween = nil
-            end
-            textLabel.Text = "TIME'S UP!"
-            textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow
-
-            -- Optional: keep the message for a while
-            wait(5)
-
-            -- Fade out the UI
-            local fadeInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-            local fadeTween = TweenService:Create(screenGui, fadeInfo, {BackgroundTransparency = 1, TextTransparency = 1})
-            fadeTween:Play()
-            fadeTween.Completed:Wait()
-
-            -- Destroy UI
-            screenGui:Destroy()
-            screenGui = nil
-            textLabel = nil
-            break
-        else
-            -- Update display
-            textLabel.Text = "Time Remaining: " .. formatTime(remaining)
-        end
-
-        wait(1)
-    end
+-- Example trigger: teleport all players after 10 seconds
+wait(10)
+for _, player in pairs(Players:GetPlayers()) do
+    teleportPlayer(player)
 end
-
--- Listen for server signal to start the timer
-startTestEvent.OnClientEvent:Connect(function(durationHours)
-    local durationSeconds = durationHours * 3600
-    startCountdown(durationSeconds)
-end)
-
--- Optional: For testing, you can trigger the timer manually:
--- startCountdown(60) -- 1 minute countdown
