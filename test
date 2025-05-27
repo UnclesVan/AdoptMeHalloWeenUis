@@ -1,47 +1,52 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Workspace = game.Workspace
+-- Configuration
+local MIN_DISTANCE_FROM_SPAWN = 50 -- Minimum distance the platform will be from the spawn point
+local MAX_DISTANCE_FROM_SPAWN = 200 -- Maximum distance the platform will be from the spawn point
+local PLATFORM_SIZE = Vector3.new(20, 5, 20) -- Dimensions of the platform (Length, Width, Height)
+local PLATFORM_COLOR = Color3.fromRGB(0, 150, 255) -- Color of the platform (e.g., a shade of blue)
+local PLATFORM_MATERIAL = Enum.Material.Plastic -- Material of the platform
 
-local spawnLocation = Vector3.new(0, 0, 0) -- Set spawn location here
-local minDistance = 100 -- Minimum distance from spawn
+-- Get the spawn location (assuming a typical Roblox game where a SpawnLocation exists)
+local spawnLocation = game.Workspace:FindFirstChildOfClass("SpawnLocation")
+local spawnPosition = Vector3.zero
 
+if spawnLocation then
+    spawnPosition = spawnLocation.Position
+else
+    warn("No SpawnLocation found in Workspace. Using (0,0,0) as a fallback spawn position.")
+    -- You might want to get the player's initial spawn point if there's no dedicated SpawnLocation part
+    -- For example, if you have a custom spawn system.
+end
+
+-- Function to generate a random position
 local function getRandomPositionAwayFromSpawn()
-    local angle = math.random() * 2 * math.pi
-    local distance = minDistance + math.random(50, 200) -- Random distance away
-    local x = spawnLocation.X + math.cos(angle) * distance
-    local z = spawnLocation.Z + math.sin(angle) * distance
-    local y = 50 -- Height above ground, adjust as needed
-    return Vector3.new(x, y, z)
+    local randomAngle = math.random() * math.pi * 2 -- Random angle in radians
+    local randomDistance = math.random(MIN_DISTANCE_FROM_SPAWN, MAX_DISTANCE_FROM_SPAWN)
+
+    local offsetX = math.cos(randomAngle) * randomDistance
+    local offsetZ = math.sin(randomAngle) * randomDistance
+
+    -- We keep the Y-coordinate relative to the spawn's Y, but you might want to adjust this
+    -- For example, if you want platforms to always be at a certain absolute Y-level.
+    local randomX = spawnPosition.X + offsetX
+    local randomY = spawnPosition.Y + (PLATFORM_SIZE.Y / 2) + 10 -- Slightly above the spawn ground
+    local randomZ = spawnPosition.Z + offsetZ
+
+    return Vector3.new(randomX, randomY, randomZ)
 end
 
-local function teleportPlayer(player)
-    local character = player.Character
-    if not character then return end
-    local humanoidRoot = character:FindFirstChild("HumanoidRootPart")
-    if not humanoidRoot then return end
+-- Create the platform
+local platform = Instance.new("Part")
+platform.Name = "RandomPlatform"
+platform.Size = PLATFORM_SIZE
+platform.Color = PLATFORM_COLOR
+platform.Material = PLATFORM_MATERIAL
+platform.Anchored = true -- Make sure the platform doesn't fall
+platform.CanCollide = true -- Players can stand on it
 
-    local newPos = getRandomPositionAwayFromSpawn()
+-- Set the random position
+platform.Position = getRandomPositionAwayFromSpawn()
 
-    -- Move player
-    humanoidRoot.CFrame = CFrame.new(newPos + Vector3.new(0, 5, 0)) -- Slightly above ground
+-- Parent the platform to the Workspace so it appears in the game
+platform.Parent = game.Workspace
 
-    -- Create platform beneath the player
-    local platform = Workspace:FindFirstChild("TeleportPlatform")
-    if not platform then
-        -- Create if not exists
-        platform = Instance.new("Part")
-        platform.Name = "TeleportPlatform"
-        platform.Size = Vector3.new(10, 1, 10)
-        platform.Anchored = true
-        platform.BrickColor = BrickColor.new("Bright yellow")
-        platform.Parent = Workspace
-    end
-
-    platform.CFrame = CFrame.new(newPos - Vector3.new(0, platform.Size.Y / 2, 0))
-end
-
--- Example trigger: teleport all players after 10 seconds
-wait(10)
-for _, player in pairs(Players:GetPlayers()) do
-    teleportPlayer(player)
-end
+print("Created platform at: " .. tostring(platform.Position))
