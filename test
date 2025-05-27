@@ -1,5 +1,5 @@
 -- LocalScript
--- This script should be placed in StarterPlayerScripts or directly inside a ScreenGui
+-- Place this in StarterPlayerScripts or inside a ScreenGui
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -7,13 +7,14 @@ local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 
--- RemoteEvents (must match names in the server script)
+-- RemoteEvents (must match server script)
 local showUITestEvent = ReplicatedStorage:WaitForChild("ShowUITestEvent")
-local updateTimerEvent = ReplicatedStorage:WaitForChild("UpdateTimerEvent") -- New RemoteEvent for timer
+local updateTimerEvent = ReplicatedStorage:WaitForChild("UpdateTimerEvent") -- RemoteEvent for timer updates
 
 local screenGui = nil -- Reference to the ScreenGui
 local textLabel = nil -- Reference to the TextLabel
 local flashingTween = nil -- To control the flashing tween
+local fadeTween = nil -- To handle fade out tween
 
 local timerRunning = false
 local currentTestStartTime = 0
@@ -27,15 +28,16 @@ local function formatTime(seconds)
     return string.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
 end
 
--- Function to create and manage the UI elements
+-- Function to create and initialize UI elements
 local function createUIElements()
-    if screenGui and screenGui.Parent then -- Check if UI already exists
-        return screenGui, textLabel -- Return existing if found
+    if screenGui and screenGui.Parent then
+        return screenGui, textLabel -- Already exists
     end
 
     screenGui = Instance.new("ScreenGui")
     screenGui.Name = "TestUIMainScreen"
-    screenGui.Parent = player.PlayerGui
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = player:WaitForChild("PlayerGui")
 
     textLabel = Instance.new("TextLabel")
     textLabel.Name = "FlashingTestLabel"
@@ -44,90 +46,115 @@ local function createUIElements()
     textLabel.BackgroundTransparency = 1
     textLabel.Font = Enum.Font.SourceSansBold
     textLabel.TextSize = 50
-    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Initial Red color
+    textLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Initial Red
     textLabel.TextStrokeTransparency = 0
     textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
-    textLabel.Text = "Loading Timer..." -- Initial text, will be updated by timer
+    textLabel.Text = "Loading Timer..."
     textLabel.ZIndex = 10
     textLabel.Parent = screenGui
 
-    -- Create a TweenInfo for the flashing effect
+    -- Create flashing tween
     local tweenInfo = TweenInfo.new(
-        0.5, -- Duration of one flash (0.5 seconds)
+        0.5,
         Enum.EasingStyle.Sine,
         Enum.EasingDirection.InOut,
-        -1, -- Repeat infinitely
-        true, -- Reverses the tween (flashes back and forth)
+        -1,
+        true,
         0
     )
 
-    -- Tween for text color
     flashingTween = TweenService:Create(
         textLabel,
         tweenInfo,
-        { TextColor3 = Color3.fromRGB(255, 100, 100) } -- Lighter red for the flash
+        { TextColor3 = Color3.fromRGB(255, 100, 100) }
     )
 
-    -- Start the flashing effect
+    -- Start flashing
     flashingTween:Play()
 
     return screenGui, textLabel
 end
 
--- Function to start the countdown
+-- Function to start countdown timer
 local function startCountdown(startTime, duration)
-    -- If a timer is already running with the same start time, don't restart it
+    -- Avoid restarting if same parameters
     if timerRunning and currentTestStartTime == startTime and totalTestDuration == duration then
         return
     end
 
-    -- If a timer was running for a *different* period, stop it first
+    -- If already running with different params, stop previous
     if timerRunning then
-        timerRunning = false -- Signal the old loop to stop
-        task.wait(0.1) -- Give a moment for the old loop to exit
+        timerRunning = false
+        -- Wait briefly to allow loop to exit
+        task.wait(0.1)
+    end
+
+    -- Cancel previous fadeTween if any
+    if fadeTween then
+        fadeTween:Cancel()
+        fadeTween = nil
     end
 
     currentTestStartTime = startTime
     totalTestDuration = duration
     timerRunning = true
 
-    createUIElements() -- Ensure UI is created before starting countdown
+    createUIElements()
 
+    -- Reset UI properties
+    if screenGui then
+        screenGui.BackgroundTransparency = 0
+        -- Optional: reset TextLabel transparency if needed
+        -- textLabel.Text = ""
+        -- textLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+
+    -- Main countdown loop
     while timerRunning and textLabel and textLabel.Parent do
         local elapsedSeconds = os.time() - currentTestStartTime
         local remainingSeconds = totalTestDuration - elapsedSeconds
 
         if remainingSeconds <= 0 then
-            if flashingTween then flashingTween:Cancel() end -- Stop flashing
-            textLabel.Text = "TEST OVER!"
-            textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Change color to yellow
-            
-            task.wait(5) -- Show "TEST OVER!" for 5 seconds
-            
-            if screenGui then
-                -- Add a fade out effect for the UI
-                local fadeTweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                local fadeTween = TweenService:Create(screenGui, fadeTweenInfo, {ScreenTransparency = 1})
-                fadeTween:Play()
-                fadeTween.Completed:Wait() -- Wait for fade to complete
-                screenGui:Destroy()
+            -- End of test
+            if flashingTween then
+                flashingTween:Cancel()
+                flashingTween = nil
             end
-            
+
+            textLabel.Text = "TEST OVER!"
+            textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow
+
+            -- Show for 5 seconds
+            task.wait(5)
+
+            -- Fade out the UI
+            if screenGui then
+                local fadeInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                fadeTween = TweenService:Create(screenGui, fadeInfo, {BackgroundTransparency = 1, TextTransparency = 1})
+                fadeTween:Play()
+                fadeTween.Completed:Wait()
+                -- Destroy UI after fade
+                screenGui:Destroy()
+                screenGui = nil
+                textLabel = nil
+            end
+
             timerRunning = false
-            break -- Exit the loop
+            break
         else
+            -- Update the timer display
             textLabel.Text = "THIS IS A TEST FOR " .. formatTime(remainingSeconds)
         end
-        task.wait(1) -- Update every second
+        task.wait(1)
     end
 end
 
--- Listen for the RemoteEvent from the server to show UI (initial trigger)
+-- Handler for showing the UI
 showUITestEvent.OnClientEvent:Connect(function()
-    createUIElements() -- Just create the UI, the timer update will fill content
+    createUIElements()
 end)
 
--- Listen for the RemoteEvent from the server to update timer data
+-- Handler for updating the timer
 updateTimerEvent.OnClientEvent:Connect(function(serverStartTime, serverDuration)
     startCountdown(serverStartTime, serverDuration)
 end)
