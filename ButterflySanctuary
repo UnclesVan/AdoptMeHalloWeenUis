@@ -1,0 +1,152 @@
+-- Remove original hotbar item
+local argsClear = {1}
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/SetSlotProperties"):InvokeServer(unpack(argsClear))
+
+-- Add new hotbar item
+local argsSet = {
+    1,
+    {
+        category = "food",
+        kind = "butterfly_2025_snapdragon_flower"
+    }
+}
+game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("ToolAPI/SetSlotProperties"):InvokeServer(unpack(argsSet))
+
+-- Load your dehash script
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/UnclesVan/AdoPtMe-/refs/heads/main/dehashwithslashinmiddle')))()
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create UI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MinimalUI"
+screenGui.Parent = playerGui
+screenGui.ResetOnSpawn = false
+
+local uiOffsetX = 200
+local uiOffsetY = 50
+
+-- Helper functions
+local function createButton(text, yPos)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 40)
+    btn.Position = UDim2.new(0, uiOffsetX + 10, 0, yPos)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 14
+    return btn
+end
+
+local function createLabel(text, yPos)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0, 200, 0, 20)
+    lbl.Position = UDim2.new(0, uiOffsetX + 10, 0, yPos)
+    lbl.Text = text
+    lbl.TextColor3 = Color3.new(1,1,1)
+    lbl.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    lbl.Font = Enum.Font.SourceSansSemibold
+    lbl.TextSize = 12
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    return lbl
+end
+
+-- Create Auto Toggle Button
+local autoToggleBtn = createButton("Auto Toggle: OFF", uiOffsetY + 10)
+autoToggleBtn.Parent = screenGui
+
+-- Create Attempt Exchange Button
+local buyBtn = createButton("Attempt Exchange", uiOffsetY + 60)
+buyBtn.Parent = screenGui
+
+-- Create Label and TextBox for amount
+local amountLabelY = uiOffsetY + 110
+local amountLabel = createLabel("Amount:", amountLabelY)
+amountLabel.Position = UDim2.new(0, uiOffsetX + 10, 0, amountLabelY)
+amountLabel.Parent = screenGui
+
+local amountBoxY = amountLabelY + 20 + 5
+local amountBox = Instance.new("TextBox")
+amountBox.Size = UDim2.new(0, 200, 0, 30)
+amountBox.Position = UDim2.new(0, uiOffsetX + 10, 0, amountBoxY)
+amountBox.Text = "1"
+amountBox.PlaceholderText = "Enter amount"
+amountBox.BackgroundColor3 = Color3.new(1,1,1)
+amountBox.TextColor3 = Color3.new(0,0,0)
+amountBox.Font = Enum.Font.SourceSansSemibold
+amountBox.TextSize = 12
+amountBox.Parent = screenGui
+
+-- Variables
+local autoFlag = false
+
+-- Helper function to simulate clicks
+local function fireConnections(event)
+    for _, connection in pairs(getconnections(event)) do
+        connection:Fire()
+    end
+end
+
+local function simulateClick(btn)
+    if btn then
+        fireConnections(btn.MouseButton1Down)
+        wait(0.05)
+        fireConnections(btn.MouseButton1Click)
+        wait(0.05)
+        fireConnections(btn.MouseButton1Up)
+    end
+end
+
+-- Auto Open Loop (from hotbar items)
+local function autoOpenLoop()
+    while autoFlag do
+        local success, err = pcall(function()
+            local toolContainer = playerGui:WaitForChild("ToolApp", 5)
+                :WaitForChild("Frame")
+                :WaitForChild("Hotbar")
+                :WaitForChild("ToolContainer")
+            if toolContainer then
+                for _, child in ipairs(toolContainer:GetChildren()) do
+                    if child:IsA("GuiObject") then
+                        simulateClick(child)
+                    end
+                end
+            end
+        end)
+        if not success then warn("AutoOpen error:", err) end
+        wait(2)
+    end
+end
+
+-- Toggle button logic
+autoToggleBtn.MouseButton1Click:Connect(function()
+    autoFlag = not autoFlag
+    if autoFlag then
+        autoToggleBtn.Text = "Auto Toggle: ON"
+        autoToggleBtn.BackgroundColor3 = Color3.new(0, 0.5, 0)
+        coroutine.wrap(autoOpenLoop)()
+    else
+        autoToggleBtn.Text = "Auto Toggle: OFF"
+        autoToggleBtn.BackgroundColor3 = Color3.new(0.5, 0, 0)
+    end
+end)
+
+-- Attempt Exchange button logic
+buyBtn.MouseButton1Click:Connect(function()
+    local success, err = pcall(function()
+        local buyAmount = tonumber(amountBox.Text)
+        if not buyAmount or buyAmount < 1 then
+            buyAmount = 1
+        end
+        local args = {
+            "food",
+            "butterfly_2025_snapdragon_flower",
+            buyAmount
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("API"):WaitForChild("SocialStonesAPI/AttemptExchange"):FireServer(unpack(args))
+    end)
+    if not success then warn("AttemptExchange error:", err) end
+end)
