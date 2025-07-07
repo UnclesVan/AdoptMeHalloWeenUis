@@ -419,7 +419,7 @@ local candyCorn = Instance.new("ImageLabel", frame)
 candyCorn.Size = UDim2.new(0.35, 0, 0.9, 0)
 candyCorn.Position = UDim2.new(0.02, 0, 0.05, 0)
 candyCorn.BackgroundTransparency = 1
-candyCorn.Image = "rbxassetid://85161010184505"  -- Reference image ID    
+candyCorn.Image = "rbxassetid://139125625829259"  -- Reference image ID    
 candyCorn.ScaleType = Enum.ScaleType.Fit
 
 --all old image IDs from Adopt Me! Devs:
@@ -428,6 +428,8 @@ candyCorn.ScaleType = Enum.ScaleType.Fit
 -- 80184394321521 patched.
 -- Hearts 86091048492397 patched
 -- 106495507831851 shards patched
+-- 85161010184505 PATCHED
+
 
 -- Create the "READY FOR CHRISTMAS" message on top of the candy corn image
 local readyForChristmasLabel = Instance.new("TextLabel", frame)
